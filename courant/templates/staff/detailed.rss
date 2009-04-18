@@ -1,0 +1,11 @@
+{% extends "base.rss" %}
+{% load rss %}
+{% load sections %}
+
+{% block html_link %}http://{{ request.get_host }}{{ staffer.get_absolute_url }}{% endblock %}
+{% block title %}{{ staffer }}{% endblock %}
+{% block description %}Articles by {{ staffer }}{% endblock %}
+
+{% block items %}
+    {% rss_article_items staffer.articles.all %}
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/events.css" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block content %}
+<div class="span-14 border">
+    <div class="event">
+        <div class="event-header">
+            <div class="calendar-box">
+                <div class="month">{{ event.date|date:"b" }}</div>
+                <div class="day">{{ event.date|date:"j" }}</div>
+            </div>
+            
+            <h1 class="event-name">{{ event }}</h1>
+            <p class="event-summary">{{ event.summary }}</p>
+        </div>
+
+        <table class="event-details">
+            <caption>Event Details</caption>
+            <tbody>
+                <tr>
+                    <th>Type:</th>
+                    <td><a href="{{ event.type.get_absolute_url }}">{{ event.type }}</a></td>
+                </tr>
+                <tr>
+                    <th>Price:</th>
+                    <td>$1000000/Free</td>
+                </tr>
+                <tr>
+                    <th>URL:</th>
+                    <td><a href="http://localhost:8000" rel="nofollow">http://localhost:8000</a></td>
+                </tr>
+                <tr>
+                    <th>Contact:</th>
+                    <td>
+                        Mark Twain<br>
+                        <strong>Email:</strong> <a href="#">testing@zpao.com</a><br>
+                        <strong>Phone:</strong> 800.555.1234<br>
+                        <strong>Fax?:</strong> 800.555.1234<br>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="event-location">
+            <caption>Event Time &amp; Place</caption>
+            <tbody>
+                <tr>
+                    <th>Date</th>
+                    <td>{{ event.date|date:"F j, Y" }}</td>
+                </tr>
+                <tr>
+                    <th>Time</th>
+                    <td>
+                        {# TODO: handle unspecified times #}
+                        {{ event.start_time }}&mdash;{{ event.end_time }}
+                    </td>
+                </tr>
+                <tr>
+                    <th>On Campus?</th>
+                    <td>Yes/No</td>
+                </tr>
+                <tr>
+                    <th>Venue</th>
+                    <td>University Center - Rangos</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>
+                        5000 Forbes Ave<br>
+                        Pittsburgh, PA, 15213
+                    </td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td><a href="#">View [Google/Yahoo/MS/MapQuest] Map</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="event-description">
+            {{ event.description }}
+        </div>
+
+        <p class="event-disclaimer">
+            Information reprinted as obtained from event's organizer and may be subject to change.
+        </p>
+    </div>
+</div>
+
+<div class="span-5 border">
+    <div class="event-links">
+        <ul>
+            <li><a href="{% url event_submit %}">Suggest an Event</a></li>
+        </ul>
+    </div>
+  <div class="event-more">
+    
+    <h3></h3>
+    <ul>
+    </ul>
+  </div>
+</div>
+
+<div class="span-5 last">
+  <div class="ad ad-rec">
+    <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+  </div>
+  <p>&larr;190px&rarr;</p>
+</div>
+
+{% endblock %}

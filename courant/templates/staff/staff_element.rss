@@ -1,0 +1,5 @@
+<author>
+    {% for staffer in staffers.all %}
+        {{ staffer }}
+    {% endfor %}
+</author>

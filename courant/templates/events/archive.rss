@@ -1,0 +1,10 @@
+{% extends "base.rss" %}
+{% load rss %}
+
+{% block html_link %}http://{{ request.build_absolute_uri }}{% endblock %}
+{% block title %}Events{% endblock %}
+{% block description %}Events{% endblock %}
+
+{% block items %}
+    {% rss_events_items events.object_list %}
+{% endblock %}

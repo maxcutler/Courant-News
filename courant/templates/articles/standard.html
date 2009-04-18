@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load tagging_tags %}
+{% load sections %}
+{% load emailthis %}
+{% load sharethis %}
+{% load countthis %}
+{% load comments %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/article.css" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block content %}
+<div class="span-14 border">
+    <div class="article">
+        <h1>{{ article.heading }}</h1>
+        <div class="article-meta small quiet">
+            <div class="author">
+                <ul>
+                {% for author in article.authors.all %}
+                    <li><a href="{{ author.get_absolute_url }}">{{ author }}</a> &mdash; {{ author.position }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="published-at">Published <span>{{ article.published_at|date:"F j, Y" }}</span></div>
+            <div class="tags">Tags:
+                {# TODO join by commas... equiv of arr.to_sentence in rails #}
+                {% tags_for_object article as tag_list %}
+                <ul>
+                    {% for tag in tag_list %}
+                    <li><a href="{% url tag_detailed tag %}">{{ tag }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <ul class="article-tools">
+            <li id="sharethistoggle">
+                <a href="#" id="sharethistoggle">SHARE THIS!</a>
+                <ul id="sharethislist">
+                    {% sharethis_display all url article.get_absolute_url title article.heading description article.summary as socialnetworks %}
+                </ul>
+            </li>
+            <script type="text/javascript">
+                $('#sharethistoggle').bind('click', function(event) {
+                    $('#sharethislist').toggle();
+                });
+            </script>
+            
+            <li id="emailthistoggle"><a href="#">EMAIL THIS!</a></li>
+            <script type="text/javascript">
+                $('#emailthistoggle').bind('click', function(event) {
+                    $('#emailthisdiv').toggle();
+                });
+            </script>
+        </ul>
+        
+        {% emailthis_loadform article "emailthisdiv" %}
+        
+        {% countthis article %}
+        {% get_most_popular news.article from last 7 days limit 10 as articles %}
+        {% for article in articles %}
+            {{ article.view_count }}
+        {% endfor %}
+
+        <div id="article-body">
+            {{ article.body_html|safe|linebreaks }}
+        </div>
+        
+        {% block extra_content %}
+            {% get_comment_count for article as comment_count %}
+            <a href="{{ article.get_comment_url }}">Comments{% if comment_count %} ({{ comment_count}}){% endif %}</a>
+        {% endblock %}
+    </div>
+</div>
+
+
+<div class="span-5 border">
+  <div class="article-more">
+    
+    <h3>More from {{ article.section }}</h3>
+    <ul>
+    {% get_latest_from article.section 10 as more_articles %}
+    {% for more_article in more_articles %}
+      <li><a href="{{ more_article.get_absolute_url }}">
+        {{ more_article.heading }}
+        <span>{{ more_article.published_on|date:"M j g:i a" }}</span>
+      </a></li>
+    {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<div class="span-5 last">
+  <div class="ad ad-rec">
+    <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+  </div>
+  <p>&larr;190px&rarr;</p>
+</div>
+
+{% endblock %}

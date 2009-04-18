@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load tagging_tags %}
+{% load sections %}
+{% load emailthis %}
+{% load sharethis %}
+{% load comments %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/media.css" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block content %}
+<div class="span-14 border">
+    <div class="media">
+        <h1>{{ media_item.name }}</h1>
+        <div class="media-meta small quiet">
+            <div class="author">
+                <ul>
+                {% for staffer in media_item.staffers.all %}
+                    <li><a href="{{ staffer.get_absolute_url }}">{{ staffer }}</a> &mdash; {{ staffer.position }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="published-at">Published <span>{{ media_item.published_at|date:"F j, Y" }}</span></div>
+            <div class="tags">Tags:
+                {# TODO join by commas... equiv of arr.to_sentence in rails #}
+                {% tags_for_object media_item as tag_list %}
+                <ul>
+                    {% for tag in tag_list %}
+                    <li><a href="{% url tag_detailed tag %}">{{ tag }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <ul class="article-tools">
+            <li id="sharethistoggle">
+                <a href="#" id="sharethistoggle">SHARE THIS!</a>
+                <ul id="sharethislist">
+                    {% sharethis_display all url media_item.get_absolute_url title media_item.name description media_item.caption as socialnetworks %}
+                </ul>
+            </li>
+            <script type="text/javascript">
+                $('#sharethistoggle').bind('click', function(event) {
+                    $('#sharethislist').toggle();
+                });
+            </script>
+            
+            <li id="emailthistoggle"><a href="#">EMAIL THIS!</a></li>
+            <script type="text/javascript">
+                $('#emailthistoggle').bind('click', function(event) {
+                    $('#emailthisdiv').toggle();
+                });
+            </script>
+        </ul>
+        
+        {% emailthis_loadform media_item "emailthisdiv" %}
+
+        <div id="media-body">
+            {% if media_item.image %}
+                <img src="{{ media_item.image.get_display_url }}">
+            {% else %}
+                <p>Unknown Media Type</p>
+            {% endif %}
+        </div>
+        
+        {% block extra_content %}
+            {% get_comment_count for media_item as comment_count %}
+            <a href="{{ media_item.get_comment_url }}">Comments{% if comment_count %} ({{ comment_count}}){% endif %}</a>
+        {% endblock %}
+    </div>
+</div>
+
+
+<div class="span-5 border">
+  <div class="media-more">
+    
+    <h3>Related Media</h3>
+    <ul>
+        <li>Something here.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="span-5 last">
+  <div class="ad ad-rec">
+    <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+  </div>
+  <p>&larr;190px&rarr;</p>
+</div>
+
+{% endblock %}

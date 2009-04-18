@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="{% url profiles_create_profile %}" method="POST">
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+    </form>
+{% endblock %}

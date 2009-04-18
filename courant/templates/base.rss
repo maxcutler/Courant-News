@@ -1,0 +1,30 @@
+{% comment %}
+    Based on the spec at http://cyber.law.harvard.edu/rss/rss.html
+    The <?xml line must be the first line, so that's why there's no line break after the following endcomment
+{% endcomment %}<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        {% comment %}
+            Suggested by http://validator.w3.org/feed/docs/warning/MissingAtomSelfLink.html
+        {% endcomment %}
+        <atom:link href="{{ request.build_absolute_uri }}" rel="self" type="application/rss+xml" />
+        
+        {% comment %}
+            These three fields are required
+        {% endcomment %}
+        <title>{% settings_get_setting SITE_TITLE %} - {% block title %}{% endblock %}</title>
+        <link>{% block html_link %}{% endblock %}</link>
+        <description>{% block description %}{% endblock %}</description>
+        
+        {% comment %}
+            These fields are optional
+        {% endcomment %}
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <language>en-us</language>
+        
+        <managingEditor>{% settings_get_setting MANAGERS as managers %}{{ managers|first|last }} ({{ managers|first|first }})</managingEditor>
+        <webMaster>{% settings_get_setting ADMINS as admins %}{{ admins|first|last }} ({{ admins|first|first }})</webMaster>
+        
+        {% block items %}{% endblock %}
+    </channel>
+</rss>

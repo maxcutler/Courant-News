@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load tagging_tags %}
+
+{% block html_title %}Tag - {{ tag }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="{{ tag }} RSS" href="{% url tag_detailed tag as tag_url %}{{ tag_url|slice:":-1" }}.rss" >
+{% endblock %}
+
+{% block content %}
+<h1>{{ tag }}</h1>
+
+{% tagged_objects tag in news.Article as tagged_articles %}
+
+<ul>
+    {% for article in tagged_articles %}
+        <li><a href="{{article.get_absolute_url }}">{{ article.heading }}</a></li>
+    {% endfor %}
+</ul>
+
+<a href="{% url tag_detailed tag %}">Link to this page for pedagogical purposes</a>
+
+{% endblock %}

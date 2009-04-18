@@ -1,0 +1,12 @@
+{% if context.perms.comments.can_moderate %}
+    <div class="moderation-links">
+        <form action="{% url comments-approve comment.pk %}" method="post">
+            <input type="hidden" name="next" value="{{ context.request.build_absolute_uri }}" />
+            <input class="approve submit" type="submit" name="submit" value="Approve" />
+        </form>
+        <form action="{% url comments-delete comment.pk %}" method="post">
+            <input type="hidden" name="next" value="{{ context.request.build_absolute_uri }}" />
+            <input class="remove submit" type="submit" name="submit" value="Remove" />
+        </form>
+    </div>
+{% endif %}

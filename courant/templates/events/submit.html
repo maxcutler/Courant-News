@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/forms.css" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block content %}
+    <div class="span-14 border">
+        <h1>Submit an Event!</h1>
+
+        <p>
+            We don&rsquo;t know everything that&rsquo;s happening, so we need your help!
+            Just fill out the form below to get the ball rolling
+        </p>
+
+        <form action="{% url event_submit %}" method="POST">
+            <div class="required">
+                <label for="id_name">Name</label>
+                {{ form.name }}
+            </div>
+
+            <div class="required">
+                <label for="id_summary">Summary</label>
+                {{ form.summary }}
+            </div>
+
+            <div class="required">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="required">
+                <label for="id_type">Event Type</label>
+                {{ form.type }}
+            </div>
+
+            <div class="optional">
+                <label for="id_tags">Tags</label>
+                {{ form.tags }}
+            </div>
+
+            <div class="required">
+                <label for="id_date">Date</label>
+                {{ form.date }}
+            </div>
+
+            <div class="required">
+                <label for="id_end_time">End Time</label>
+                {{ form.end_time }}
+            </div>
+
+            <div class="buttons">
+                <input type="submit" value="Submit Event" />
+            </div>
+        </form>
+
+    </div>
+
+    <div class="span-5 border">
+        <div class="event-links">
+            <ul>
+                <li><a href="{% url event_submit %}">Suggest an Event</a></li>
+            </ul>
+        </div>
+      <div class="event-more">
+
+        <h3></h3>
+        <ul>
+        </ul>
+      </div>
+    </div>
+
+    <div class="span-5 last">
+      <div class="ad ad-rec">
+        <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+      </div>
+      <p>&larr;190px&rarr;</p>
+    </div>
+{% endblock %}

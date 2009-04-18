@@ -1,0 +1,17 @@
+- model: events.eventtype
+  pk: 1
+  fields:
+    name: Lecture
+    slug: lecture
+
+- model: events.eventtype
+  pk: 2
+  fields:
+    name: Performance
+    slug: performance
+
+- model: events.eventtype
+  pk: 3
+  fields:
+    name: Sporting Event
+    slug: sporting-event

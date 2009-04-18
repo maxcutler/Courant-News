@@ -1,0 +1,5 @@
+Activate your account! {{ site }}{% url registration_activate activation_key %}
+
+You have {{ expiration_days }} days to do so.
+
+Those are all the variables this gets.

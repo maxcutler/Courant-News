@@ -1,0 +1,5 @@
+{% load emailthis %}
+<div id="{{ div_id }}"></div>
+<script type="text/javascript">
+    $('#{{ div_id }}').load("{% get_emailthis_url object %}");
+</script>

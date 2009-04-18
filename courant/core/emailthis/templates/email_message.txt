@@ -1,0 +1,3 @@
+From: {{ email_from }}
+Message: {{ message }}
+Link: {{ url }}

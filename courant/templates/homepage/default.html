@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load sections %}
+{% block html_title %}Issue From {{ issue.published_at|date:"F j, Y" }}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="Latest Issue RSS" href="/latest.rss" >
+{% endblock %}
+
+{% block content %}
+    <div class="span-8 border">
+        {% regroup issue.articles_by_section.all by section as section_list %}
+        {% for section in section_list %}
+            <h2>{{ section.grouper }}</h2>
+            <ul>
+            {% for article in section.list|dictsort:"order" %}
+                <li><a href="{{ article.get_absolute_url }}">{{ article.heading }}</a></li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+
+    <div class="span-6 border">
+        Column 2!
+    </div>
+
+    <div class="span-5 border">
+        Column 3!
+    </div>
+
+    <div class="span-5 last">
+        <div class="ad ad-rec">
+            <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+        </div>
+    </div>
+{% endblock %}

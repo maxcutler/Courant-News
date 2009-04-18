@@ -1,0 +1,19 @@
+{% load tagging_tags %}
+
+{% load rss %}
+{% for article in articles %}
+    <item>
+        <title>{{ article.heading }}</title>
+        <link>http://{{ request.get_host }}{{ article.get_absolute_url }}</link>
+        <guid>http://{{ request.get_host }}{{ article.get_absolute_url }}</guid>
+        <description>{{ article.summary }}</description>
+        <pubDate>{{ article.published_at|date:"r"}}</pubDate>
+        {% tags_for_object article as tag_list %}
+        {% for tag in tag_list %}
+            <category domain="http://{{ request.get_host }}{% url tag_detailed tag %}">{{ tag }}</category>
+        {% endfor %}
+        <source url="{{ request.build_absolute_uri }}">{% settings_get_setting SITE_TITLE %}</source>
+        {% rss_author_element article.authors %}
+        <comments>http://{{ request.get_host }}{{ article.get_comment_url }}</comments>
+    </item>
+{% endfor %}

@@ -1,0 +1,10 @@
+-e svn+http://code.djangoproject.com/svn/django/trunk#egg=django-trunk
+-e svn+http://django-tagging.googlecode.com/svn/trunk#egg=tagging
+-e git://github.com/django-extensions/django-extensions.git#egg=django_extensions
+-e svn+http://svn.aeracode.org/svn/south/trunk#egg=south
+-e svn+http://django-sphinx.googlecode.com/svn/trunk/#egg=djangosphinx
+-e svn+http://django-mptt.googlecode.com/svn/trunk#egg=mptt
+-e svn+http://django-pagination.googlecode.com/svn/trunk#egg=pagination
+-e svn+http://sorl-thumbnail.googlecode.com/svn/trunk#egg=sorl
+-e git://github.com/robhudson/django-debug-toolbar.git#egg=debug_toolbar
+-e git://github.com/jezdez/django-comment-utils.git#egg=comment_utils

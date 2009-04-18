@@ -1,0 +1,12 @@
+{% extends "base.rss" %}
+{% load rss %}
+{% load comments %}
+
+{% block html_link %}http://{{ request.get_host }}{{ article.get_comment_url }}{% endblock %}
+{% block title %}{{ article }} - Comments{% endblock %}
+{% block description %}Comments for {{ article }}{% endblock %}
+
+{% block items %}
+    {% get_comment_list for article as comments %}
+    {% rss_comments_items article comments %}
+{% endblock %}

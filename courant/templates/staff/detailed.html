@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block html_title %}Staff Member - {{ staffer }}{% endblock %}
+{% block content %}
+<h1>{{ staffer }}</h1>
+<h2>Articles</h2>
+<ul>
+    {% for article in staffer.articles.all %}
+    <li><a href="{{ article.get_absolute_url }}">{{ article.heading }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

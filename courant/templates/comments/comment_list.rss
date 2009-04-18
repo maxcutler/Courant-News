@@ -1,0 +1,12 @@
+
+{% load rss %}
+{% for comment in comments %}
+    <item>
+        <title>Comment on {{ object }}</title>
+        <link>http://{{ request.get_host }}{{ object.get_comments_url }}#comment{{ comment.id}}</link>
+        <guid>http://{{ request.get_host }}{{ object.get_comments_url }}#comment{{ comment.id}}</guid>
+        <pubDate>{{ comment.submit_date|date:"r"}}</pubDate>
+        <description>{{ comment.comment }}</description>
+        <content:encoded><![CDATA[{{ comment.comment|safe }}]]></content:encoded>
+    </item>
+{% endfor %}

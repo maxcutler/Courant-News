@@ -1,0 +1,12 @@
+{% extends "base.rss" %}
+{% load rss %}
+{% load tagging_tags %}
+
+{% block html_link %}http://{{ request.get_host }}{% url tag_detailed tag %}{% endblock %}
+{% block title %}Tag - {{ tag }}{% endblock %}
+{% block description %}I have no idea what to put here!{% endblock %}
+
+{% block items %}
+    {% tagged_objects tag in news.Article as tagged_articles %}
+    {% rss_article_items tagged_articles %}
+{% endblock %}

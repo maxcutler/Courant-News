@@ -1,0 +1,21 @@
+<script type="text/javascript" src="{{ STATIC_MEDIA_URL }}js/jquery.form.js"></script>
+
+<div id="{{ form_name }}_messages"></div>
+<form action="{% url emailthis_submit content_type.id, item.id %}" method="POST" id="{{ form_name }}">
+{{ form.as_p }}
+<input type="submit" value="Submit" />
+</form>
+
+<script type="text/javascript"> 
+    $('#{{ form_name }}').ajaxForm({
+        error: function(response) {
+           $('#{{ form_name }}_messages').html(response.responseText);
+        },
+        success: function(data, status) {
+            $('#{{ form_name }}_messages').html("Message sent.");
+            $('#{{ form_name }}').hide();
+        },
+        dataType: 'json',
+        resetForm: 'true'
+    }); 
+</script> 

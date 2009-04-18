@@ -1,0 +1,5 @@
+{% extends "base.iphone" %}
+
+{% block content %}
+    This is the iPhone site!
+{% endblock %}

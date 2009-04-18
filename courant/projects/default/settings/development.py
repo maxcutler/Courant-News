@@ -1,0 +1,3 @@
+DEBUG = True
+TEMPLATE_DEBUG = True
+ASSETS_DEBUG = 'nofilter'

@@ -1,0 +1,11 @@
+{% extends "base.rss" %}
+{% load rss %}
+
+{% block html_link %}http://{{ request.get_host }}{% endblock %}
+{% block title %}Latest Issue{% endblock %}
+{% block description %}I have no idea what to put here!{% endblock %}
+
+
+{% block items %}
+    {% rss_article_items issue.articles.all %}
+{% endblock %}

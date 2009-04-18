@@ -1,0 +1,97 @@
+{% extends "articles/standard.html" %}
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/forms.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/comments.css" type="text/css" media="screen, projection">
+{% endblock %}
+{% load comments %}
+{% load recaptcha %}
+{% load moderation %}
+{% block extra_content %}
+    {{ block.super }}
+    <div id="article-comments">
+        {% get_comment_count for article as comment_count %}
+        <h2>{{ comment_count }} Comment{{ comment_count|pluralize }}</h2>
+        {% get_comment_list for article as comments %}
+        <ol id="comment-list">
+        {% for comment in comments %}
+            <li id="c{{ comment.id }}" class="comment">
+                <div class="comment-author">
+                    <span class="comment-permalink"><a href="{{ comment.get_absolute_url }}">{{ forloop.counter }}</a></span>
+                    {{ comment.userinfo.name }}
+                </div>
+                <div class="comment-meta">
+                    {{ comment.submit_date|date:"F j, Y \a\t g:i a" }}
+                    {# TODO: mark "staff" #}
+                </div>
+                {% if comment.is_removed %}
+                    <p class="comment-removed">This comment has been deleted.</p>
+                {% else %}
+                    <div class="comment-content">{{ comment.comment }}</div>
+                {% endif %}
+                {% moderation_links comment %}
+            </li>
+        {% endfor %}
+        </ol>
+        
+        {% if article.enable_comments %}
+            {% get_comment_form for article as form %}
+            <form action="{% comment_form_target %}" method="POST">
+                <div class="required">
+                    <label for="id_name">Name</label>
+                    {% if not request.user.is_authenticated %}
+                        {{ form.name }}
+                    {% else %}
+                        <p class="non-input">{{ request.user.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="required">
+                    <label for="id_email">
+                        Email
+                        <br><span>Required, never shared</span>
+                    </label>
+                    {% if not request.user.is_authenticated %}
+                        {{ form.email }}
+                    {% else %}
+                        <p class="non-input">{{ request.user.email }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="required">
+                    <label for="id_comment">
+                        Comment
+                        <br><span>Textile &amp; Markdown are allowed</span>
+                    </label>
+                    {{ form.comment }}
+                </div>
+                
+                {% if not request.user.is_authenticated %}
+                <div class="required">
+                    <label for="recaptcha_response_field">Human Test</label>
+                    <div class="non-input">{% recaptcha_html %}</div>
+                </div>
+                {% endif %}
+                
+                {# Including in case CSS is off... #}
+                <div class="required hide">
+                    <label for="id_honeypot">
+                        Human Test, Part 2
+                        <br><span>Leave this blank if you are human!</span>
+                    </label>
+                    {{ form.honeypot }}
+                </div>
+                
+                {{ form.content_type }}
+                {{ form.object_pk }}
+                {{ form.timestamp }}
+                {{ form.security_hash }}
+                <div class="buttons">
+                    <input type="submit" value="Add comment" id="id_submit" name="post" />
+                </div>
+            </form> 
+        {% else %}
+            Comments are disabled for this article.
+        {% endif %}
+    </div>
+{% endblock %}

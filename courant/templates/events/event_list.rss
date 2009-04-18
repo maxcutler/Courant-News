@@ -1,0 +1,10 @@
+{% for event in events %}
+    <item>
+        <title><![CDATA[{{ event|safe }}]]></title>
+        <link>http://{{ request.get_host }}{{ event.get_absolute_url }}</link>
+        <guid>http://{{ request.get_host }}{{ event.get_absolute_url }}</guid>
+        <pubDate>{{ event.start_datetime|date:"r"}}</pubDate>
+        <description>{{ event.summary }}</description>
+        <content:encoded><![CDATA[{{ event.summary|safe }}]]></content:encoded>
+    </item>
+{% endfor %}

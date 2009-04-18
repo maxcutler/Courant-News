@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load search %}
+{% load didyoumean %}
+
+{% block content %}
+    {% get_search_form as search_form %}
+    <form action="{% url search %}" method="GET">
+        {{ search_form.as_p }}
+        <input type="submit" value="Search">
+    </form>
+
+    {% if results %}
+        Results Found
+    {% endif %}
+    {% if results %}
+        <h2>Found {{ count }} <em>Results</em></h2>
+        <ul>
+        {% for result in results %}
+            <li><a href="{{ result.get_absolute_url }}">{{ result }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
+{% endblock %}

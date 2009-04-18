@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/events.css" type="text/css" media="screen, projection">
+{% endblock %}
+
+{% block content %}
+    <div class="span-14 border">
+        <h1>Viewing {{ events.object_list.count}} Events</h1>
+        <ul class="event-list">
+        {% for event in events.object_list %}
+            <li>
+                <p class="event-list-name"><a href="{{ event.get_absolute_url }}">{{ event }}</a></p>
+                <p class="event-list-summary">{{ event.summary }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+
+        {% ifnotequal events.paginator.num_pages 1 %}
+            <div class="pagination">
+                <span class="previous">
+                {% if events.has_previous %}
+                    <a href="?page={{ events.previous_page_number }}">&larr; Previous</a>
+                {% else %}
+                    &larr; Previous
+                {% endif %}
+                </span>
+
+                <span class="current">
+                    Page {{ events.number }} of {{ events.paginator.num_pages }}
+                </span>
+
+                <span class="next">
+                {% if events.has_next %}
+                    <a href="?page={{ events.next_page_number }}">Next &rarr;</a>
+                {% else %}
+                    Next &rarr;
+                {% endif %}
+                </span>
+            </div>
+        {% endifnotequal %}
+    </div>
+
+    <div class="span-5 border">
+        <div class="event-links">
+            <ul>
+                <li><a href="{% url event_submit %}">Suggest an Event</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="span-5 last">
+      <div class="ad ad-rec">
+        <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+      </div>
+      <p>&larr;190px&rarr;</p>
+    </div>
+{% endblock %}

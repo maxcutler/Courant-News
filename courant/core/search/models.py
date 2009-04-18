@@ -1,0 +1,1 @@
+#So Django picks up the app correctly

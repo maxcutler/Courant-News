@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if account %}
+        Congratulations, you just registered {{ account }}
+    {% else %}
+        Didn't work.
+    {% endif %}
+{% endblock %}

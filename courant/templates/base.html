@@ -1,0 +1,102 @@
+{%load common_tags %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        
+        <title>Sample News Site - {% block html_title %}Home page{% endblock %}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Begin Blueprint CSS Files -->
+            <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen, projection">
+            <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/blueprint/print.css" type="text/css" media="print"> 
+            <!--[if IE]>
+              <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/blueprint/ie.css" type="text/css" media="screen, projection">
+            <![endif]-->
+        <!-- End Blueprint CSS Files -->
+        
+        <!-- Begin Our CSS Files -->
+            <link rel="stylesheet" href="{{ STATIC_MEDIA_URL }}css/main.css" type="text/css" media="screen, projection">
+        <!-- End Our CSS Files -->
+        
+        <!-- Begin JQuery Files -->
+            <script type="text/javascript" src="{{ STATIC_MEDIA_URL }}js/jquery-1.2.6.min.js"></script>
+        <!-- End JQuery Files -->
+        {% block extrahead %}{% endblock %}
+    </head>
+    <body>
+        <div class="container">
+            <div id="hd" class="span-24">
+                <h1><a href="/">Sample News Site</a></h1>
+                <div id="user-links">
+                    {% if not request.user.is_authenticated %}
+                        <a href="{% url registration_register %}">Register</a> | <a href="{% url auth_login %}?next={{request.path}}">Log In</a>
+                    {% else %}
+                        Welcome <a href="{% url profiles_edit_profile %}">{{ request.user.get_profile.display_name }}</a> | <a href="{% url auth_logout %}">Log Out</a>
+                    {% endif %}
+                </div>
+            </div> <!-- #hd -->
+            
+            <div id="nav" class="span-24">
+              {# TODO: build this menu from existing sections #}
+                <ul>
+                    <li>
+                        <span><a href="#">News</a></span>
+                        <ul>
+                            <li><a href="#">University News</a></li>
+                            <li><a href="#">Art News</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span><a href="#">Sports</a></span>
+                        <ul>
+                            <li><a href="#">Sports General</a></li>
+                            <li><a href="#">Sports Opinion</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Arts &amp; Culture</a></li>
+                    <li><a href="#">Opinions</a></li>
+                </ul>
+            </div> <!-- #nav -->
+            
+<!--
+            <div id="breadcrumbs" class="span-24 clear">
+                <p><a href="index.html">Home</a> &rarr; <a href="#">News</a> &rarr; State to slash budget in face of rising deficit</p>
+            </div> --> <!-- #breadcrumbs -->
+            
+            <div id="bd" class="span-24">
+                {% block content %}
+                <div class="span-8 border">
+                    Column 1!
+                </div>
+
+                <div class="span-6 border">
+                    Column 2!
+                </div>
+
+                <div class="span-5 border">
+                    Column 3!
+                </div>
+
+                <div class="span-5 last">
+                    <div class="ad ad-rec">
+                        <img src="{{ STATIC_MEDIA_URL }}images/ads/ad-rec.png">
+                    </div>
+                </div>
+                {% endblock %}
+            </div> <!-- #bd -->
+            
+            <div id="ft" class="span-24">
+                {% block footer %}
+                <div class="span-8">
+                    Sample News Site &copy; Copyright 2004-2008
+                </div>
+                <div class="span-16 last">
+                    List of pages (about, contact, etc) here? Or maybe sections?
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+        
+        {% block google_analytics %}
+            {% google_analytics %}
+        {% endblock %}
+    </body>
+</html>

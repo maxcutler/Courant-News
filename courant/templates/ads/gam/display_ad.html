@@ -1,0 +1,9 @@
+{% if not debug %}
+<script type="text/javascript">
+    GA_googleFillSlotWithSize("{{ account_id }}", "{{ name }}", {{ width }}, {{ height }});
+</script>
+{% else %}
+<div style="width: {{ width }}px; height: {{ height }}px; background-color: #999; color: #FFF; text-align: center; margin: auto;">
+    {{ name }} Ad ({{ width }} x {{ height }})
+</div>
+{% endif %}

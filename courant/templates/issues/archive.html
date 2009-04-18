@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load sections %}
+{% block html_title %}Issue From {{ issue.published_at|date:"F j, Y" }}{% endblock %}
+{% block content %}
+<h1>Archive</h1>
+{% regroup issue.articles_by_section.all by section as section_list %}
+{% for section in section_list %}
+    <h2>{{ section.grouper }}<h2>
+    <ul.
+    {% for article in section.list|dictsort:"order" %}
+        <li><a href="{{ article.get_absolute_url }}">{{ article.heading }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock %}

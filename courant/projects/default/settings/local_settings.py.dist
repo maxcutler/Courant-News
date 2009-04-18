@@ -1,0 +1,105 @@
+# copy this file to local_settings.py and adjust settings
+
+import os
+from courant.default_settings import COURANT_PATH, INSTALLED_APPS
+
+PROJECT_PATH = os.path.dirname(os.path.split(os.path.abspath(__file__))[0])
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = '2*v^h3ku#$dn@c+-0+e!_6si83t^ut@lsx_2h@j7&yk+q%l2+@'
+
+# Site settings
+SITE_TITLE = ''
+SITE_DESCRIPTION = ''
+
+DEVELOPMENT_SERVER = True
+
+DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = ''             # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+CACHE_BACKEND = 'dummy://'
+CACHE_KEY_PREFIX = '/site'
+CACHE_IGNORE_REGEXPS = (
+    r'/admin.*',
+    r'/search.*',
+)
+
+ADMINS = (
+    # ('Your Name', 'your_email@domain.com'),
+)
+
+MANAGERS = ADMINS
+
+INTERNAL_IPS = ('127.0.0.1',)
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = os.path.join(PROJECT_PATH,'media','media')
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = '/media_files/'
+
+STATIC_ROOT = os.path.join(PROJECT_PATH,'website','media','static')
+STATIC_URL = '/static_media/'
+
+#Admin media - ADMIN_MEDIA_* is used by Django, so prefix with COURANT_
+COURANT_ADMIN_MEDIA_URL = '/courant_admin_media/'
+COURANT_ADMIN_MEDIA_ROOT = os.path.join(COURANT_PATH,'courant','admin','media')
+
+# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
+# trailing slash.
+# Examples: "http://foo.com/media/", "/media/".
+ADMIN_MEDIA_PREFIX = '/admin_media/'
+
+# Whitelist of URLs to ignore file extensions on 
+FILE_EXTENSION_IGNORE = ['^%s' % MEDIA_URL,'^%s' % STATIC_URL,'^%s' % COURANT_ADMIN_MEDIA_URL,'^/__debug__','^/sitemap(-\w+)?.xml$']
+
+SITE_TEMPLATE_DIR = os.path.join(PROJECT_PATH,'templates') # Site's templates
+TEMPLATE_DIRS = (
+    os.path.join(COURANT_PATH,'courant','core','admin','templates'),
+    SITE_TEMPLATE_DIR,
+    os.path.join(COURANT_PATH,'courant','templates'),
+)
+
+#Email server settings, to use GMail just change username and password
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 1025
+
+#This tuple is for a choice field for the contact form
+CONTACT_FORM_CONTACTS = (
+    ('email@email.com', 'Bug'),
+    ('email@email.com', 'Ask the Editor'),
+    ('email@email.com', 'Tips')
+)
+
+# Google Analytics ID, should be a user setting. If set, will display the GA code.
+GOOGLE_ANALYTICS_ID = None
+
+# Google Ad Manager account ID
+GAM_ACCOUNT_ID = None
+
+# Sphinx bin directory, with trailing slash
+SPHINX_BIN = '/var/bin/sphinx'
+SPHINX_SERVER = 'localhost'
+SPHINX_PORT = 3312
+SPHINX_API_VERSION = 0x113
+
+#How long activation codes are active for registering users
+ACCOUNT_ACTIVATION_DAYS = 2
+
+#Set this to False by default, 'mobile' to force mobile viewing, and 'iphone' to force iPhone viewing
+MOBILE_DEBUG = False
+
+# Your site's custom apps go here
+INSTALLED_APPS += (
+    'apps.articles',
+)

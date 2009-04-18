@@ -1,0 +1,2 @@
+{% load common_tags %}
+Contact From {% settings_get_setting SITE_TITLE %}
