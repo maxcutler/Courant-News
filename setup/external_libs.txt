@@ -1,6 +1,6 @@
 -e svn+http://code.djangoproject.com/svn/django/trunk#egg=django-trunk
 -e svn+http://django-tagging.googlecode.com/svn/trunk#egg=tagging
--e git://github.com/django-extensions/django-extensions.git#egg=django_extensions
+-e svn+http://django-command-extensions.googlecode.com/svn/trunk/#egg=django_extensions
 -e svn+http://svn.aeracode.org/svn/south/trunk#egg=south
 -e svn+http://django-sphinx.googlecode.com/svn/trunk/#egg=djangosphinx
 -e svn+http://django-mptt.googlecode.com/svn/trunk#egg=mptt
