@@ -983,7 +983,7 @@ def after_install(options, home_dir):
     else:
         source = options.courant_source
     logger.notify("Installing courant... (from %s)" % source)
-    call_subprocess([pip, '-q', 'install', '-E', env_dir, '-e', source],
+    call_subprocess([pip, 'install', '-E', env_dir, '-e', source],
                     filter_stdout=filter_lines, show_stdout=False,)
     
     # install requirements
@@ -994,7 +994,7 @@ def after_install(options, home_dir):
     else:
         # remote copy, which pip will have installed
         requirements_dir = join(src_dir, 'courant', 'setup')
-    call_subprocess([pip, '-q', 'install', '-E', env_dir, '-r', join(requirements_dir, 'external_libs.txt')],
+    call_subprocess([pip, 'install', '-E', env_dir, '-r', join(requirements_dir, 'external_libs.txt')],
                     filter_stdout=filter_lines, show_stdout=False)
     
     logger.notify("Finished!")
