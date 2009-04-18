@@ -38,13 +38,13 @@ def after_install(options, home_dir):
                     filter_stdout=filter_lines, show_stdout=False,)
     
     # install requirements
-    logger.notify("Installing requirements...")
+    logger.notify("Installing external dependencies...")
     if os.path.exists(source):
         # local copy, so we need to use that path
-        requirements_dir = join(source, 'requirements')
+        requirements_dir = join(source, 'setup')
     else:
         # remote copy, which pip will have installed
-        requirements_dir = join(src_dir, 'courant', 'requirements')
+        requirements_dir = join(src_dir, 'courant', 'setup')
     call_subprocess([pip, '-q', 'install', '-E', env_dir, '-r', join(requirements_dir, 'external_libs.txt')],
                     filter_stdout=filter_lines, show_stdout=False)
     
