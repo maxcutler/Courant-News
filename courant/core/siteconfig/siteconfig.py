@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
 from courant.core.siteconfig.models import SiteConfiguration
-from courant.core.settings import usersettings
+from courant.core.siteconfig.settings import usersettings
 
 
 def load_site_config():
