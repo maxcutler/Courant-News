@@ -78,8 +78,10 @@ Bootstrapping
 ^^^^^^^^^^^^^
 
 To get started, download the bootstrapping file from the Courant News
-source code repository: `courant-boot.py`_. Save it wherever is convenient,
-preferrably somewhere that you have easy access. 
+source code repository: `courant-boot.py`_. Save it to the directory where you
+would like Courant News to be installed; good candidates include your home
+directory, and `/usr/local/` on *nix systems, but there are no real restrictions
+on where you put it.
 
 .. _courant-boot.py: http://code.courantnews.com/export/latest/trunk/setup/courant-boot.py
 
