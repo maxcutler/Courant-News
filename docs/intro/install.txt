@@ -122,6 +122,11 @@ be more convenient::
 
     python courant-boot.py site-env -n mynews -p ~/mynews/trunk
     
+Note: pip currently does not support repositories that require authentication.
+In cases where your project's repository requires authentication to do a checkout,
+you will have to do the checkout manually. When pip supports authenticated checkouts,
+we will add support for such behavior.
+    
 External Requirements
 """""""""""""""""""""
 
