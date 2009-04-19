@@ -11,3 +11,8 @@ First steps
 
    * :ref:`Overview <intro-overview>`
    * :ref:`Installation <intro-install>`
+   
+Reference
+==================
+
+   * :ref:`Table of Contents <contents>`
