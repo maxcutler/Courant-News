@@ -1050,8 +1050,8 @@ def after_install(options, home_dir):
         logger.notify("Skipping external dependencies...")
     
     # if supplied, checkout site's project
-    logger.notify("Creating site project...")
     if options.project_source:
+        logger.notify("Creating site project...")
         template_dir = os.path.abspath(join(src_dir, 'courant', 'courant', 'projects', options.project_source))
         
         # determine whether this is a local repo, a template, or a remote repo
