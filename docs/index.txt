@@ -1,0 +1,13 @@
+.. _index:
+
+========================================
+Courant News documentation
+========================================
+
+.. rubric:: Everything you need to know about Courant News
+
+First steps
+==================
+
+   * :ref:`Overview <intro-overview>`
+   * :ref:`Installation <intro-install>`
