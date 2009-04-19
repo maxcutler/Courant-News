@@ -4,6 +4,9 @@
 Courant News documentation contents
 ========================================
 
+Table of Contents
+==================
+
 .. toctree::
    :maxdepth: 2
    
