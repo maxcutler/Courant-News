@@ -84,11 +84,12 @@ preferrably somewhere that you have easy access.
 .. _courant-boot.py: http://code.courantnews.com/export/latest/trunk/setup/courant-boot.py
 
 In the following examples, we are going to install into a virtualenv called
-`site-env` and a site called `mynews`, but you can call them whatever you wish.
-The most common scenario for a beginner would be to start with the sample
-"default" project site that Courant News bundles. To do this, run the following
-from your terminal/command-line (after moving to the directory where you
-downloaded the courant-boot.py file)::
+`site-env` (in the same directory where the courant-boot.py resides) and a site
+called `mynews`, but you can call them whatever you wish. The most common
+scenario for a beginner would be to start with the sample "default" project site
+that Courant News bundles. To do this, run the following from your
+terminal/command-line (after moving to the directory where you downloaded the
+courant-boot.py file)::
 
     python courant-boot.py site-env -n mynews -p default
     
