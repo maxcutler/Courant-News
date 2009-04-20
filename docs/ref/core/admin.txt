@@ -1,0 +1,13 @@
+.. _ref-core-admin:
+
+========================================
+Admin
+========================================
+
+.. module:: courant.core.admin
+    :synopsis: Customized media and templates for Django's admin contrib app.
+    
+The Courant News project currently intends to build a highly customized admin
+application based on Django's contrib.admin app. However, at this time, only
+a set of simple customizations have been added until the spec for the "real"
+admin app is completed. 

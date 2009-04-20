@@ -1,0 +1,10 @@
+.. _ref-core-countthis:
+
+========================================
+Countthis
+========================================
+
+.. module:: courant.core.countthis
+    :synopsis: Content analytics and most popular functionality.
+    
+TBD.

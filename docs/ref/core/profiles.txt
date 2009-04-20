@@ -1,0 +1,13 @@
+.. _ref-core-profiles:
+
+========================================
+Profiles
+========================================
+
+.. module:: courant.core.profiles
+    :synopsis: User profiles.
+    
+Originally forked from `django-profiles <http://www.bitbucket.org/ubernostrum/django-profiles/>`_.
+
+Usage documentation can be found in the original django-profiles
+`docs <http://bitbucket.org/ubernostrum/django-profiles/src/tip/docs/>`_.

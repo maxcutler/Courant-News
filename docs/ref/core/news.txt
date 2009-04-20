@@ -1,0 +1,10 @@
+.. _ref-core-news:
+
+========================================
+News
+========================================
+
+.. module:: courant.core.news
+    :synopsis: Core news functionality, including sections, articles, issues.
+    
+TBD

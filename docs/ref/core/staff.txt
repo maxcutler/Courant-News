@@ -1,0 +1,10 @@
+.. _ref-core-staff:
+
+========================================
+Staff
+========================================
+
+.. module:: courant.core.staff
+    :synopsis: Staff and contributors of content
+    
+TBD

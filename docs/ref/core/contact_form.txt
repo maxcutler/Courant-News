@@ -1,0 +1,15 @@
+.. _ref-core-contactform:
+
+========================================
+Contact Form
+========================================
+
+.. module:: courant.core.contact_form
+    :synopsis: An extensible contact form application.
+    
+Originally forked from
+`django-contact-form <http://bitbucket.org/ubernostrum/django-contact-form/overview/>`_,
+this app handles the creation and usage of contact forms.
+
+For now, please refer to the original django-contact-form
+`docs <http://bitbucket.org/ubernostrum/django-contact-form/src/tip/docs/>`_.

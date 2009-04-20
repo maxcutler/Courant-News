@@ -12,6 +12,34 @@ First steps
    * :ref:`Overview <intro-overview>`
    * :ref:`Installation <intro-install>`
    
+Core modules
+==================
+
+   * :ref:`Core modules overview <ref-core-overview>`
+   * Modules
+      * :ref:`Admin <ref-core-admin>`
+      * :ref:`Ads <ref-core-ads>`
+      * :ref:`Assets <ref-core-assets>`
+      * :ref:`Caching <ref-core-caching>`
+      * :ref:`Contact Form <ref-core-contactform>`
+      * :ref:`Countthis <ref-core-countthis>`
+      * :ref:`Discussions <ref-core-discussions>`
+      * :ref:`Emailthis <ref-core-emailthis>`
+      * :ref:`Events <ref-core-events>`
+      * :ref:`Get Tag <ref-core-gettag>`
+      * :ref:`Maintenance Mode <ref-core-maintenancemode>`
+      * :ref:`Media <ref-core-media>`
+      * :ref:`Menus <ref-core-menus>`
+      * :ref:`Mobile <ref-core-mobile>`
+      * :ref:`News <ref-core-news>`
+      * :ref:`Pages <ref-core-pages>`
+      * :ref:`Profiles <ref-core-profiles>`
+      * :ref:`Registration <ref-core-registration>`
+      * :ref:`Search <ref-core-search>`
+      * :ref:`Site Configuration <ref-core-siteconfig>`
+      * :ref:`Staff <ref-core-staff>`
+      * :ref:`Utilities <ref-core-utils>`
+   
 Reference
 ==================
 

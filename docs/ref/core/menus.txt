@@ -1,0 +1,10 @@
+.. _ref-core-menus:
+
+========================================
+Menus
+========================================
+
+.. module:: courant.core.menus
+    :synopsis: Organization and display of menus and menu-like site features.
+    
+TBD

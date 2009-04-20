@@ -1,0 +1,100 @@
+.. _ref-core-caching:
+
+========================================
+Caching
+========================================
+
+.. module:: courant.core.caching
+    :synopsis: Enhanced functionality for Django's cache framework.
+    
+This document explains enhancements made to Django's
+`cache framework <http://docs.djangoproject.com/en/dev/topics/cache/#topics-cache>`_.
+
+Django's cache framework is quite capable and covers most common use-cases.
+However, there are some aspects which can use some improvement and optimization
+for high traffic sites.
+
+Introduction
+============
+
+To use the enhanced versions of the low-level cache API that Django provides,
+use the following import line::
+
+    from courant.core.caching import cache
+    
+instead of::
+
+    from django.core.cache import cache
+
+
+Dog-piling
+===========
+
+Caching is often used to store the output of some computationally-expensive
+operation, such as querying the database or generating a large chunk of HTML.
+Periodically, the caches must be updated as the content that it represents
+changes.
+
+In a typical scenario, the cache will expire after some amount of time, and the
+first visitor after that expiration will cause a new version of the cache to be
+generated. However, if it takes too long to generate the cache contents, another
+visitor may hit that page and also try to generate a new version of the cache.
+This can quickly spiral out of control, as numerous people are trying to
+generate a new cache, quickly causing your server to strain under the load. This
+phenomenom is called "dog-piling."
+
+To avoid such a scenario, the enhanced version of the caching API uses a "soft"
+expiration policy. Instead of destroying the cache entry when its time is up,
+the first cache hit after soft expiration will mark the cache as not expired, so
+that subsequent visitors will see a valid cache. It will then proceed to
+generate the new cache version and then replace the old one once complete. In
+this manner, only a single visitor will cause the cache to regenerate and
+everyone else will see a valid cache throughout the process.
+
+Memcached Full Page Serving
+===========================
+
+In a proper deployment, a lightweight web server such as Nginx or lighttpd will
+be serving the site's media files to reduce the load on the web server powering
+the dynamic part of the site. Such off-loading can be extended to serving full
+page caches to anonymous (non-logged-in) users directly from the cache daemon,
+avoiding hitting the dynamic server entirely.
+
+This behavior is enabled in the ``default_settings.py`` file. If you have
+overriden the ``MIDDLEWARE_CLASSES`` setting, you will need to check that the
+``courant.core.caching.middleware.MemcachedMiddleware`` is in the list of
+enabled middleware. It should be the first in the list, as it must come after
+all other middleware processing during the response phase of request processing.
+
+In your site's settings file, you must define a ``CACHE_KEY_PREFIX``, which
+should be a forward slash followed by some short string. For example::
+
+    # in mynews.settings.local_settings.py
+    CACHE_KEY_PREFIX = '/mynews'
+    
+You will then need to use this same prefix in your web server's configuration
+file when fetching the pages from memory. Following is an example snippet
+from an Nginx configuration file::
+
+    location /
+    {
+      if ($request_method = POST) {
+        proxy_pass /django;
+        break;
+      }
+  
+      if ($http_cookie ~* "sessionid=.{32}") {
+        proxy_pass /django;
+        break;
+      }
+      add_header Memcached True;
+      default_type "text/html; charset=utf-8";
+      set $memcached_key "/mynews-$uri";
+      memcached_pass localhost:11211;
+      error_page 404 502 = /django;
+    }
+    
+Another setting, ``CACHE_IGNORE_REGEXPS``, is a list of regular expressions for
+which the ``MemcachedMiddleware`` will ignore when deciding whether to create
+a full page cache. By default, it will ignore the admin and search parts of your
+website.

@@ -1,0 +1,17 @@
+.. _ref-core-discussions:
+
+========================================
+Discussions
+========================================
+
+.. module:: courant.core.discussions
+    :synopsis: Commenting for content, including moderation.
+    
+This document explains the available functionality related to commenting on
+content objects in Courant News. Such functionality generally builds upon
+Django's `comments framework <http://docs.djangoproject.com/en/dev/ref/contrib/comments/>`_.
+
+Moderation
+==========
+
+TBD

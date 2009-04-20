@@ -1,0 +1,14 @@
+.. _ref-core-assets:
+
+========================================
+Assets
+========================================
+
+.. module:: courant.core.assets
+    :synopsis: Packaging and minification of JS and CSS files.
+    
+Originally forked from `django-assets <https://launchpad.net/django-assets>`_,
+this module handles the packaging and minification of Javascript and CSS assets.
+
+Usage documentation can be found in the associated
+`README file <http://code.courantnews.com/browser/trunk/courant/core/assets/README?format=txt>`_.

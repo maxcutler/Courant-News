@@ -1,0 +1,10 @@
+.. _ref-core-media:
+
+========================================
+Media
+========================================
+
+.. module:: courant.core.media
+    :synopsis: Variety of multimedia content types and functionality.
+    
+TBD

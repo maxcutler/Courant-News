@@ -1,0 +1,30 @@
+.. _ref-core-index:
+
+Core Modules
+================
+
+.. toctree::
+    :maxdepth: 1
+    
+    admin
+    ads
+    assets
+    caching
+    contact_form
+    countthis
+    discussions
+    emailthis
+    events
+    gettag
+    maintenance_mode
+    media
+    menus
+    mobile
+    news
+    pages
+    profiles
+    registration
+    search
+    siteconfig
+    staff
+    utils

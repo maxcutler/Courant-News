@@ -1,0 +1,13 @@
+.. _ref-core-registration:
+
+========================================
+Registration
+========================================
+
+.. module:: courant.core.registration
+    :synopsis: User registration and account activation.
+    
+Originally forked from `django-registration <http://www.bitbucket.org/ubernostrum/django-registration/>`_.
+
+Usage documentation can be found in the original django-registration
+`docs <http://bitbucket.org/ubernostrum/django-registration/src/tip/docs/>`_.

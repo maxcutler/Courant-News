@@ -1,0 +1,12 @@
+.. _ref-core-emailthis:
+
+========================================
+Emailthis
+========================================
+
+.. module:: courant.core.emailthis
+    :synopsis: Email-to-a-friend app for allowing users to email content to other people.
+    
+Originally forked from `django-emailthis <http://code.google.com/p/django-emailthis/>`_.
+
+TBD

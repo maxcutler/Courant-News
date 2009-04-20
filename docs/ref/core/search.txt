@@ -1,0 +1,11 @@
+.. _ref-core-search:
+
+========================================
+Search
+========================================
+
+.. module:: courant.core.search
+    :synopsis: Powerful search of all content types.
+    
+Courant News currently builds upon `django-sphinx <http://code.google.com/p/django-sphinx/>`_,
+but plans to switch to `haystack <http://haystacksearch.org/>`_ in the near future.

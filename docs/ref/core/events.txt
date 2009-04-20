@@ -1,0 +1,27 @@
+.. _ref-core-events:
+
+========================================
+Events
+========================================
+
+.. module:: courant.core.events
+    :synopsis: App for events and event calendar.
+    
+This document explains the events system in Courant News.
+
+Event Types
+===========
+
+.. class:: courant.core.events.models.EventType
+
+The ``EventType`` model represents the basic means to organize ``Event`` objects
+by dividing them into discreet types or categories.
+
+TBD
+
+Events
+=======
+
+.. class:: courant.core.events.models.Event
+
+TBD

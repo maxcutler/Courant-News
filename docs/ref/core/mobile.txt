@@ -1,0 +1,10 @@
+.. _ref-core-mobile:
+
+========================================
+Mobile
+========================================
+
+.. module:: courant.core.mobile
+    :synopsis: Mobile version(s) of the website content.
+    
+TBD

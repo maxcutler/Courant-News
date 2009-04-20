@@ -1,0 +1,80 @@
+.. _ref-core-overview:
+
+========================================
+Core Modules Overview
+========================================
+
+This document presents a brief overview of each of the core Courant News
+modules in an attempt to provide a high-level conceptual framework for those
+using the framework.
+   
+Core modules
+==================
+
+    :ref:`Admin <ref-core-admin>`
+        Customizations for the Django contrib.admin app.
+        
+    :ref:`Ads <ref-core-ads>`
+        Tools for integrating third party ad services such as Google Ad Manager.
+        
+    :ref:`Assets <ref-core-assets>`
+        Packaging and minification of Javascript and CSS assets.
+        
+    :ref:`Caching <ref-core-caching>`
+        Enhancements to Django's cache framework to prevent dog-piling and
+        serving full page caches directly from a static file server like Nginx.
+        
+    :ref:`Contact Form <ref-core-contactform>`
+        App for building contact forms.
+        
+    :ref:`Countthis <ref-core-countthis>`
+        Simple content analytics to support "Most Popular" functionality.
+        
+    :ref:`Discussions <ref-core-discussions>`
+        Moderation and other enhancements for Django's comments app.
+        
+    :ref:`Emailthis <ref-core-emailthis>`
+        Allows visitors to share content with friends via email.
+        
+    :ref:`Events <ref-core-events>`
+        Events and event calendar functionality.
+        
+    :ref:`Get Tag <ref-core-gettag>`
+        Flexible retrieval of site content from templates.
+        
+    :ref:`Maintenance Mode <ref-core-maintenancemode>`
+        Allow access to priveleged staff while site is publicly unavailable.
+        
+    :ref:`Media <ref-core-media>`
+        Support for variety of multimedia types and their associated rendering.
+        
+    :ref:`Menus <ref-core-menus>`
+        Organization and display of menus and menu-like site features.
+        
+    :ref:`Mobile <ref-core-mobile>`
+        Mobile version(s) of site content.
+        
+    :ref:`News <ref-core-news>`
+        Core news functionality, including articles, sections, and issues.
+        
+    :ref:`Pages <ref-core-pages>`
+        Static pages, similar to Django's flatpages app.
+        
+    :ref:`Profiles <ref-core-profiles>`
+        User profiles and profile management.
+        
+    :ref:`Registration <ref-core-registration>`
+        User account registration and activation.
+        
+    :ref:`Search <ref-core-search>`
+        Flexible, efficient, site-wide search (not FULLTEXT).
+        
+    :ref:`Site Configuration <ref-core-siteconfig>`
+        Management and editing of site settings from admin interface.
+        
+    :ref:`Staff <ref-core-staff>`
+        Staff and contributors of site content.
+        
+    :ref:`Utilities <ref-core-utils>`
+        Assortment of utility functionality.
+    

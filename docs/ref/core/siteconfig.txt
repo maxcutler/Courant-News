@@ -1,0 +1,14 @@
+.. _ref-core-siteconfig:
+
+========================================
+Site Configuration
+========================================
+
+.. module:: courant.core.siteconfig
+    :synopsis: Edit site settings through the admin interface.
+    
+Originally forked from the ``siteconfig`` module of the
+`Djblets <http://code.google.com/p/reviewboard/wiki/Djblets>`_ module of
+`Review Board <http://code.google.com/p/reviewboard/>`_.
+
+TBD

@@ -1,0 +1,10 @@
+.. _ref-core-gettag:
+
+========================================
+Get Tag
+========================================
+
+.. module:: courant.core.gettag
+    :synopsis: Template tag for flexible retrieval of content.
+    
+TBD
