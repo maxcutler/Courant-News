@@ -7,4 +7,496 @@ Get Tag
 .. module:: courant.core.gettag
     :synopsis: Template tag for flexible retrieval of content.
     
-TBD
+This document describes the usage of the ``get`` template tag, which allows for
+the flexible retrieval of content from across the spectrum of available content
+types.
+
+Overview
+===============
+
+One of the important aspects of the Django template system is that it restricts
+template authors from using Python code, limiting them to only a given set of
+template "tags." This forces a separation of design and business logic, which
+often get conflated in many web projects.
+
+Typical Django best practice is to fetch all the required data in a view, and
+then pass that data into the template's context. However, with Courant News,
+views are part of the platform itself and thus are generally not modified to fit
+every circumstance exactly. Instead, (almost) all of the site's content is
+exposed through the ``get`` template tag, allowing the template author to fetch
+exactly what data is needed for a given template.
+
+The ``get`` tag is designed to use a human-readable syntax which should not
+present difficulties for non-programmers who are implementing an HTML site
+design. Due to the limitless variety of ways to design news websites, the
+``get`` makes allowances for fetching data in a variety of manners to allow the
+maximum amount of flexibility for template authors in fetching exactly what they
+need.
+
+There are two forms of the ``get`` tag; one is a "simple" form for fetching
+content by an identifier (e.g., a name field), and the other one is for
+fetching content using filtering mechanisms.
+
+Simple Form
+==================
+
+The simple form of the ``get`` tag allows for fetching of content objects by
+name. The typical use case would be for fetching a set of sections or a specific
+tag or staffer. To do this, just pass the tag the content type and the set of
+names::
+
+    {% get sections "News" "Opinion" as my_sections %}
+    
+After doing the above call, the template variable ``{{ my_sections }}`` will
+be a list of two ``Section`` objects with the corresponding names. To print
+out the list of these sections, you could put the following in a template::
+
+    {% get sections "News" "Opinion" as my_sections %}
+    <ul>
+    {% for section in my_sections %}
+        <li>{{ section.name }}</li>
+    {% endfor %}
+    </ul>
+
+If you pass only a single name, then that object will be stored directly in the
+specified template variable, instead of as a list with only one object::
+
+    {% get section "News" as news_section %}
+    <h1>{{ news_section.name }}</h1>
+    
+Typical/Normal Form
+===================
+
+In most cases, template authors won't be able to provide the names of content
+objects a priori. In such cases, they may want to fetch across content
+relationships, filter by time period, limit the number of objects returned, and
+other such filtering parameters.
+
+The syntax for this form of the ``get`` tag is more complicated, but offers
+lots of flexibility to fetch exactly the content being sought. This form of the
+``get`` tag consists of a number of optional clauses, which will be covered
+individually and then sample usage provided afterwards. First, the general
+syntax (in pseudo-regex format, split across lines for length purposes, with
+variables in angle brackets)::
+
+    {% get <content_type>
+        (with <field> <value>?)?
+        ((not)? in <content_type> <name_or_var>)*
+        (from (last|next|week) <number> <time_period>)?
+        (order by <field_name>)?
+        (limit <number> (offset <number>)?)?
+        as <template_varname> %}
+        
+Basic Structure
+----------------
+
+The ``get`` tag boils down the basic structure
+``{% get <content_type> ... as <varname> %}``.
+
+``<content_type>`` can be the singular or plural form of any model
+:ref:`registered <ref-core-gettag-registration>` with the ``get`` tag.
+
+``<varname>`` is the template variable where the results should be stored::
+
+    {% get articles ... as some_articles %}
+    {% get sections ... as some_sections %}
+   
+   
+.. _ref-core-gettag-with-clause:
+
+'With' Clause
+---------------------
+
+The ``with`` clause allows for either the filtering of objects by the value of
+a specific (non-relationship) field, or else the existence of one or more
+objects in a :class:`~django.db.models.ManyToManyField`.
+
+Filtering by field value
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The syntax for filtering by a given value for a specific field is as follows::
+
+    {% get <content_type> with <field> <value> as <varname> %}
+    
+For example, to fetch all articles published at the same day and time as
+``some_article``::
+
+    {% get articles with published_at some_article.published_at as other_articles %}
+    
+It can also be used to replicate the ``get`` tag's simple form::
+
+    {% get section with name "News" limit 1 as news_section %}
+    
+.. note::
+
+    For an explanation of why ``limit 1`` is included in this example, see
+    section below on :ref:`limit 1 <ref-core-gettag-limit-1>`.
+    
+Filtering by existence of related objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``with`` clause can also be used to fetch only objects that have at least
+one related through a given :class:`~django.db.models.ManyToManyField`
+relationship. This takes the general form::
+
+    {% get <content_type> with <m2m_field> as <varname> %}
+    
+A common use case for this variation would be to fetch only articles that have
+one or more media items associated with them::
+
+    {% get articles with media as articles_with_media %}
+    
+This form is also used by some special models to handle special functionality.
+For example, the ``Tag`` model can take the output of another ``get`` tag
+instance as its ``with`` clause parameter. For example, to fetch the tags for
+all articles which have media::
+
+    {% get articles with media as articles_with_media %}
+    {% get tags with articles_with_media as tags_for_articles_with_media %}
+    
+Refer to the documentation for specific models to see if they supply such custom
+functionality.
+
+
+.. _ref-core-gettag-in-clause:
+
+'In' Clause
+---------------------
+
+The ``in`` clause allows for filtering across model relationships
+(:class:`~django.db.models.ForeignKey` and
+:class:`~django.db.models.ManyToManyField`). More than one ``in`` clause can
+be used in a given ``get`` tag instance, allowing for filtering across more
+than one relationship at a time.
+
+The basic syntax of each in clause is::
+
+    {% get <content_type> (not)? in <content_type> <value> as <varname> %}
+    
+Prefixing the ``in`` clause with the keyword ``not`` will exclude objects
+with the given relationship instead of including them.
+
+As in the general ``get`` tag syntax, ``content_type`` can be the singular or
+plural form of any model :ref:`registered <ref-core-gettag-registration>` with
+the ``get`` tag.
+
+Finally, ``value`` can be either a name string, as seen in the simple form of
+the ``get`` tag, or it can be a variable representing a name, or it can be an
+actual object of the given ``content_type``.
+
+A common use case is to fetch articles in a given section ``some_section``::
+
+    {% get articles in section some_section as some_section_articles %}
+    
+Another is to get all articles in a section in a given issue::
+
+    {% get articles in section "News" in issue latest_issue as articles_list %}
+    
+Yet another would be to fetch all videos by a certain staffer::
+
+    {% get videos in staffer "John Smith" as john_smith_videos %}
+
+Relationship Following with Multiple ``in`` Clauses
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since multiple ``in`` clauses can be used in the same ``get`` tag instance,
+there are some potential ambiguities with regards to following relationships.
+The ``get`` tag will process the clauses left-to-right, and for each clause, it
+will attempt to find a relationship from the class to the left (or the model
+being used for the ``get`` tag if there is no previous clause) to the given
+``content_type``. If no such relationship exists, then it will move to the
+next clause to the left, and continue until it finds such a relationship on the
+base model for the ``get`` tag or else throws an error.
+
+A scenario where this could apply is when filtering by Sections, which can be
+arbitrarily nested. For example, imagine a "University" Section with a parent
+"News" section. There would be two ways to fetch articles in the University
+section::
+
+    {% get articles in section "News/University" as university_articles %}
+    
+or::
+
+    {% get articles in section "University" in section "News" as university_articles %}
+    
+The first method is possible because the Section model provides special logic
+to the ``get`` tag that allows for selection by Section path. That way is more
+explicit, and generally preferred, but the second method can be useful in some
+situations.
+
+In general, such relationship following behavior is useful in cases where
+double underscores would be used in constructing a Django ORM QuerySet.
+
+
+.. _ref-core-gettag-from-clause:
+
+'From' Clause
+---------------------
+
+Standard syntax
+^^^^^^^^^^^^^^^^
+
+The ``from`` clause allows for filtering the results by the time period in
+which they were published. The general syntax is::
+
+    {% get <content_type> from (last|next) <number> <timeperiod> as <varname> %}
+    
+The ``timeperiod`` parameter can be any valid parameter to the
+:class:`datetime.timedelta` constructor (e.g., weeks, days, hours, minutes, etc.).
+
+For example, to fetch the events for the coming week::
+
+    {% get events from next 1 weeks as upcoming_events %}
+    
+To fetch the issues from the last 10 days::
+
+    {% get issues from last 10 days as previous_issues %}
+    
+To perform this filtering, the ``get`` tag uses the date/datetime field
+specified in the model's ``get_latest_by`` ``Meta`` option. If the model has not
+defined ``get_latest_by``, you cannot use the ``from`` clause with it.
+
+Alternate syntax
+^^^^^^^^^^^^^^^^
+
+There is also an alternative syntax, which allows for the fetching of content
+published in a given week::
+
+    {% get <content_type> from week (today|<variable>) as <varname> %}
+    
+For example, to get all the issues published in the same week as a given issue
+``some_issue``::
+
+    {% get issues from week some_issue.published_at as that_weeks_issues %}
+
+Any valid :class:`~datetime.datetime` object is a valid parameter.
+
+Or to simply get all issues published this week::
+
+    {% get issues from week today as this_weeks_issues %}
+    
+The alternate syntax also uses the model's ``get_latest_by`` field as described
+above for the standard syntax.
+
+.. _ref-core-gettag-orderby-clause:
+
+'Order by' Clause
+---------------------
+
+The ``order by`` clause allows for the sorting of the result set by a field on
+the given model.
+
+It supports a syntax similar to the
+`order_by() <http://docs.djangoproject.com/en/dev/ref/models/querysets/#order-by-fields>`_
+function on Django QuerySets. Specifically, the double underscore method to
+denote sorting across foreign key relationships, and the addition of a minus
+sign ('-') before the field name to denote sorting in descending order.
+
+For example, to fetch all sections sorted by name::
+
+    {% get sections order by name as sections %}
+    
+Or, in descending order::
+
+    {% get sections order by -name as sections %}
+    
+In many cases, it is desirable to get the "latest" items, which means a
+descending sort on the ``published_at`` field::
+
+    {% get articles order by -published_at as latest_articles %}
+
+
+.. _ref-core-gettag-limit-clause:
+
+'Limit/Offset' Clause
+---------------------
+
+The ``limit`` clause allows for restricting the number of results
+fetched. To fetch the latest 10 articles::
+
+    {% get articles limit 10 as latest_articles %}
+    
+The optional ``order by`` tail clause tells the tag to return the next
+set of objects after the first number provided. For example, to return the
+11th through 20th latest articles::
+
+    {% get articles limit 10 offset 10 as not_quite_latest_articles %}
+    
+The parameters to both ``limit`` and ``offset``, like with all other parameters
+to the ``get`` tag, can be either explicit number of variables representing
+integer values.
+
+.. _ref-core-gettag-limit-1:
+
+If you pass ``limit 1`` to the ``get`` tag, then it will return just the one
+object instead of a list with only one object in it. So to get only the latest
+article::
+
+    {% get article order by -published_at limit 1 as latest_article %}
+    
+``latest_article`` will be an Article model object, not a list. Beware of this,
+because model objects cannot be iterated over like lists can.
+
+.. note::
+
+    When fetching items from a large collection like articles or media,
+    it is generally advisable to use a limit clause to restrict the number of
+    results returned by the database::
+    
+        {% get articles order by -published_at limit 20 as latest_articles %}
+
+
+.. _ref-core-gettag-registration:
+
+Registering new models
+======================
+
+The Courant News platform comes with all relevant bundled models registered with
+and hooked into the ``get`` tag. For any new models that a site author creates
+and wants to use with the ``get`` tag, the model must be explicitly registered
+before the ``get`` tag will be able to use it.
+
+In the corresponding models file, place the following import line (usually
+near the top of the file)::
+
+    from courant.core.gettag import gettag
+    
+Then, following the model's definition (``CustomEvent`` for these examples),
+call the registration function::
+
+    gettag.register(CustomEvent)
+    
+Name Field
+------------
+    
+If you call the ``register`` function with no other parameters, it is assumed
+that the model has a field called ``name`` which serves as a unique identifier.
+If your model uses some other name for such an identifier, such as ``heading``
+used for ``Article``s, then you must pass this field name to the ``name_field``
+parameter::
+
+    from courant.core.gettag import gettag
+    from django.db import models
+    ...
+    class MyModel(models.Model):
+        title = models.CharField(...)
+        ...
+    gettag.register(MyModel, name_field='title')
+    
+Model Name
+-------------
+
+By default, the ``get`` tag will use the ``verbose_name`` and
+``verbose_name_plural`` Meta class options of the model as the specifiers used
+in the ``content_type`` parameters of the ``get`` tag. These values will be
+converted to all lowercase, and spaces will be replaced by underscores.
+
+To override these values, you can use the ``singular_name`` and ``plural_name``
+keyword parameters to the register function::
+
+    from courant.core.gettag import gettag
+    from django.db import models
+    ...
+    class MyModel(models.Model):
+        ...
+        class Meta:
+            verbose_name = 'My Model'
+            verbose_name_plural = 'My Models'
+        ...
+    gettag.register(MyModel, singular_name='mymodel', plural_name='mymodels')
+    
+Had they not been passed in this example, the ``get`` tag would have used
+``my_model`` as the singular form, and ``my_models`` as the plural form.
+
+Custom Clause Handlers
+----------------------
+
+For some models, the default behavior for some of the ``get`` tag clauses may
+not be appropriate or may need to be enhanced. To allow for this, it is possible
+to define handler functions for the ``with`` and ``in`` clauses, as well as for
+name-to-object mappings.
+
+Custom ``with`` Clause Handler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To customize the behavior of a ``with`` clause for a model, define a function
+and pass it as the value of the ``with_func`` keyword parameter in the
+``register`` function call.
+
+This function should take one required and one optional positional arguments,
+corresponding to the ``with`` clause parameters as described above. The function
+should return either a :class:`~django.db.models.QuerySet` or a Python list. If
+a list is returned, the ``get`` tag will short circuit after the ``with`` clause
+is processed, ignoring any other parameters (besides what variable name to store
+the result in) in the tag instance.
+
+Custom ``in`` Clause Handler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To customize the behavior of a ``in`` clause for a model, define a function
+and pass it as the value of the ``in_func`` keyword parameter in the
+``register`` function call.
+
+This function should take two positional arguments. The first positional
+argument will be a :class:`~django.db.models.QuerySet` representing the state
+of the ``get`` tag at that point in its processing. The second positional
+argument will be the value passed to the ``in`` clause, which can be any type
+of value (e.g., a string representing the name, or an instance of that model).
+
+As with the custom ``with`` clause handler, the function should return another
+:class:`~django.db.models.QuerySet` or a Python list, in which case processing
+of the ``get`` tag parameters will short circuit.
+
+Custom Name-To-Object Mapping
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Name Mapping
+""""""""""""
+
+Sometimes it takes more than a simple field comparison to map a name field to an
+instance of a model. To handle these cases, a function can be passed as the
+value of the ``name_field`` keyword parameter in the ``register`` function
+call.
+
+The function should take a single positional argument, which is the value passed
+to the ``in`` clause or simple form of the ``get`` tag, and which can be of
+any type except an instance of that model. The function should
+return an/the instance of the model to which this value corresponds.
+
+For example, the ``Section`` model uses such a function to map a path to a given
+section. For example, it could take "News/University" as seen above and map it
+to a ``Section`` instance with the ``name`` "University" whose parent has the
+``name`` "News" and itself has no parent.
+
+Object Filtering
+""""""""""""""""
+
+Similarly, some models may require more than a simple equality comparison of the
+``name_field`` when filtering against instances of a model. To handle these
+cases, a function can be passed as the value of the ``filter_func`` keyword
+parameter in the ``register`` function call.
+
+The function should take a single positional argument, which is an instance
+of that model. The function should return a 2-tuple, with the first element
+being a filter expression for a Django ORM ``filter`` call
+(e.g., 'name__iequals'), and the second element being the value to match against
+(e.g., instance.name).
+
+For example, the ``Section`` model uses such a function to filter based on the
+full paths of sections instead of their names, because you can have multiple
+``Section``\s with the same name but different parents. Simplified from the
+``Section`` model definition::
+
+    from django.db import models
+    from courant.core.gettag import gettag
+    ...
+    class Section(models.Model):
+        name = models.CharField(...)
+        full_path = models.CharField(...)
+        ...
+        
+    def section_filter(section):
+        return ('full_path__startswith',section.full_path)
+   
+    gettag.register(Section, filter_func=section_filter, ...)
+    
