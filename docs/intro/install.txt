@@ -37,16 +37,18 @@ Install Source Control Tools
 
 Courant News and other software projects rely upon certain tools to manage
 their code and collaboration between developers. Two of the popular tools
-are Subversion_ (svn) and Git_. Although Courant News itself uses svn, a number
-of third-party libraries that we depend on use git.
-
-.. _subversion: http://subversion.tigris.org/
-.. _git: http://git-scm.com/
+are `Subversion <http://subversion.tigris.org/>`_ (svn) and `Git <http://git-scm.com/>`_. 
+Although Courant News itself uses svn, a number of third-party libraries that we depend on use git.
 
 To install svn, you can find an appropriate download at their `download
 website <http://subversion.tigris.org/getting.html#binary-packages>`_. You can
 confirm that your installation has worked by running ``svn help`` at your
 terminal or command-line program.
+
+    **Windows Note**: While the popular `TortoiseSVN <http://tortoisesvn.tigris.org/>`_ is a useful GUI
+    interface for Subversion, it will not install the necessary binaries and place them
+    on your system path for the Courant installation to work. You must install the
+    binary packages from the link above.
 
 Similarly, you can install git by choosing the appropriate link at their
 `download page <http://git-scm.com/download>`_. Windows users should probably
@@ -89,11 +91,16 @@ In the following examples, we are going to install into a virtualenv called
 `site-env` (in the same directory where the courant-boot.py resides) and a site
 called `mynews`, but you can call them whatever you wish. The most common
 scenario for a beginner would be to start with the sample "default" project site
-that Courant News bundles. To do this, run the following from your
-terminal/command-line (after moving to the directory where you downloaded the
+that Courant News bundles. You will need to call the courant-boot script from the command line.
+
+    **Windows Note**: In Vista, for the courant-boot command to work, your command
+    line window must be `run as administrator <http://www.lytebyte.com/2008/10/22/how-to-run-as-administrator-in-vista-command-line/>`_.
+    
+To do this, run the following (after moving to the directory where you downloaded the
 courant-boot.py file)::
 
-    python courant-boot.py site-env -n mynews -p default
+        python courant-boot.py site-env -n mynews -p default
+    
     
 This will create the virtualenv, install some support software, download the
 latest version of Courant News, download and install all third-party libraries
