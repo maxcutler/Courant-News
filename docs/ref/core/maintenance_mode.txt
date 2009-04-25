@@ -7,4 +7,9 @@ Maintenance Mode
 .. module:: courant.core.maintenancemode
     :synopsis: Allow access to authorized staff while site is publicly unavailable.
 
-TBD
+This app creates a new user setting that is configurable through the admin
+interface which allows for the general disabling of the website. This can be
+useful when upgrades must be performed on the server or for extreme situations.
+
+While the site is disabled, only staff members are able to access the website.
+All other visitors will instead see your ``500`` error page template. 

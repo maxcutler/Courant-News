@@ -7,4 +7,140 @@ News
 .. module:: courant.core.news
     :synopsis: Core news functionality, including sections, articles, issues.
     
+This document describes the functionality of the News application, which
+represents the core news types including ``Section``, ``Issue`` and
+``Article``.
+
+Display Types
+=====================
+
+.. class:: models.ArticleDisplayType
+.. class:: models.IssueDisplayType
+
+Display types are a means of defining multiple templates to display a given
+type of content. Not all ``Issue``\s or ``Article``\s are alike, and some may
+require different template designs and styles. Instead of defining new content
+types to handle these situations, it is rather preferrable to just create a new
+display type to handle the new designs.
+
+    .. attribute:: models.ArticleDisplayType.name
+    .. attribute:: models.IssueDisplayType.name
+    
+        A simple identifier.
+        
+    .. attribute:: models.ArticleDisplayType.template_name
+    .. attribute:: models.IssueDisplayType.template_name
+    
+        The name of the template (without file extension) that should be
+        used to render content objects with this ``DisplayType``. Should
+        include the relative path from the site template directory (e.g.,
+        "issues/standard" or "articles/types/big_picture").
+
+
+Sections
+=====================
+
+.. class:: models.Section
+
+``Section``\s represent the primary method of segmenting site content, and are
+analogous to the sections in a print publication. Unlike a print section,
+however, ``Section``\s can be nested within each other, resulting in a
+hierarchical, tree-like structure.
+
+    .. attribute:: models.Section.name
+    
+        A simple identifier, such as "News" or "Sports."
+        
+    .. attribute:: models.Section.parent
+    
+        Optional. Another ``Section`` which contains this ``Section``. Used to
+        create subsections.
+        
+    .. attribute:: models.Section.path
+    
+        A URL-friendly path string, relative to the ``parent``'s full path.
+        
+    .. attribute:: models.Section.full_path
+    
+        The full, absolute, URL-friendly path for this ``Section``. Should not
+        be modified directly, as it will be updated on ``save()`` based on the
+        value of ``path`` and ``parent.full_path``.
+        
+
+Issues
+=====================
+
+.. class:: models.Issue
+
+``Issue``\s are an optional container type used to group content items published
+on the same date. This is most useful for sites which have corresponding print
+publications.
+
+    .. attribute:: models.Issue.name
+    
+        A simple identifier to make tracking of issues easier. Can generally be
+        set to a human-readable form of the publication date.
+        
+    .. attribute:: models.Issue.published
+    
+        A flag denoting whether this ``Issue`` should be accessible on the public-
+        facing site. Will eventually be replaced by the new admin workflow
+        system.
+        
+    .. attribute:: models.Issue.published_at
+    
+        The date and time at which the ``Issue`` was/will be published.
+        
+    .. attribute:: models.Issue.display_type
+    
+        The :class:`~courant.core.news.models.IssueDisplayType` that should be
+        used to render this ``Issue``.
+        
+    .. attribute:: models.Issue.lead_media
+    
+        An optional link to a :class:`~courant.core.media.models.MediaItem` that
+        is the lead/primary/headline media item for this issue. It is up to the
+        ``display_type`` to render this appropriately.
+        
+    .. attribute:: models.Issue.articles
+    
+        The collection of :class:`~courant.core.news.models.Article`\s in this
+        ``Issue``.
+        
+Articles
+=====================
+
+``Article``\s are the heart of a news site, and represent the actual textual
+news content.
+
+Statuses
+-------------------------
+
+.. class:: models.ArticleStatus
+
+A status value that can be assigned to an ``Article``. Useful for handling
+newsroom workflow, and used to determine which articles are visible on the
+public-facing website. Will eventually be superceded by new admin workflow
+system.
+
+    .. attribute:: models.ArticleStatus.name
+    
+        A simple identifier.
+        
+    .. attribute:: models.ArticleStatus.published
+    
+        A flag denoting whether ``Article``\s with this status should be
+        visible on the public-facing website.
+        
+Default ``Article`` Model
+-------------------------
+
+.. class:: models.Article
+
+Courant News ships with a "default" ``Article`` model, which is supposed
+to represent a lowest-common-denominator set of information. Because
+each news organization has different needs when it comes to information
+associated with articles, it is possible to create custom
+``Article``-derived models (see below).
+
 TBD

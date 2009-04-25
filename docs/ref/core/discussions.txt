@@ -11,7 +11,65 @@ This document explains the available functionality related to commenting on
 content objects in Courant News. Such functionality generally builds upon
 Django's `comments framework <http://docs.djangoproject.com/en/dev/ref/contrib/comments/>`_.
 
-Moderation
-==========
+Moderation & Visibility
+==================================
 
-TBD
+Courant News supports the ability to set comment moderation settings on a
+per-object level. Site administrators can define a set of
+:class:`~courant.core.discussions.models.CommentOptions` which comprise of the
+different sets of comment moderations settings that will be used throughout the
+site. Default :class:`~courant.core.discussions.models.CommentOptions` can be
+set for each :class:`~django.contrib.contenttypes.models.ContentType`.
+
+The ``CommentOptions`` Model
+----------------------------------
+
+.. class:: models.CommentOptions
+
+    Each instance of :class:`~courant.core.discussions.models.CommentOptions`
+    has four settings which define how commenting and comment moderation will
+    work for the associated content object.
+    
+    .. attribute:: models.CommentOptions.allow_anonymous
+    
+        A boolean flag that determines whether non-authenticated users will
+        be allowed to post a comment. Templates should check this value to
+        determine whether or not to show the comment submit form to such users.
+        
+    .. attribute:: models.CommentOptions.moderate_anonymous_only
+    
+        A boolean flag that allows authenticated users' comments to
+        automatically be approved upon submission. Non-authenticated
+        (anonymous) users will need to have their comments moderated before
+        they will appear publicly.
+        
+    .. attribute:: models.CommentOptions.moderate_after
+    
+        The number of days after which submitted comments will have to be
+        moderated before becoming publicly visible. To moderate comment posts by
+        default, set this field to zero.
+
+    .. attribute:: models.CommentOptions.close_after
+    
+        The number of days after which new comments will no longer be accepted.
+        Set to zero to disable this behavior and allow new comments indefinitely.
+        
+The ``DefaultCommentOption`` Model
+----------------------------------
+
+.. class:: models.DefaultCommentOption
+
+    Instances of :class:`~courant.core.discussions.models.DefaultCommentOption`
+    defines the default :class:`~courant.core.discussions.models.CommentOptions`
+    for a given :class:`~django.contrib.contenttypes.models.ContentType`.
+    
+    .. attribute:: models.DefaultCommentOption.content_type
+        
+        :class:`~django.contrib.contenttypes.models.ContentType` to define the
+        default value for.
+        
+    .. attribute:: models.DefaultCommentOption.options
+    
+        The :class:`~courant.core.discussions.models.CommentOptions` that will be
+        used as the default for this ``content_type``.
+    

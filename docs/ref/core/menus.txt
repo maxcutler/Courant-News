@@ -7,4 +7,189 @@ Menus
 .. module:: courant.core.menus
     :synopsis: Organization and display of menus and menu-like site features.
     
-TBD
+This document describes the use of the menu system in Courant News.
+
+Overview
+================
+
+The menu system in Courant News consists of three tiers: menu locations,
+menus, and menu items.
+
+:class:`~courant.core.menus.models.MenuLocation`\s represent a place in the
+templates where a menu will be inserted. Most sites have a main navigation
+menu location, as well as one or more auxilary or submenu locations.
+
+:class:`~courant.core.menus.models.Menu`\s reside within
+:class:`~courant.core.menus.models.MenuLocation`\s, and represent a set of
+:class:`~courant.core.menus.models.MenuItem`\s that will be shown in a given
+:class:`~courant.core.menus.models.MenuLocation` at the same time. Each
+:class:`~courant.core.menus.models.Menu` defines the conditions upon which it
+will be served for its defined :class:`~courant.core.menus.models.MenuLocation`.
+In this manner, the system will determine which
+:class:`~courant.core.menus.models.Menu` should be displayed in each
+:class:`~courant.core.menus.models.MenuLocation` based on a given
+:class:`~django.http.HttpRequest`.
+
+Each :class:`~courant.core.menus.models.Menu` has a set of
+:class:`~courant.core.menus.models.MenuItem`\s, which are the specific links
+that comprise the menu. These items can be associated with either arbitrary
+URLs or with other content objects within the website. This allows for menu
+links to stay valid even when the site URL scheme changes. It also enables the
+ability to determine which :class:`~courant.core.menus.models.MenuItem`
+in a :class:`~courant.core.menus.models.Menu` is "active" (its page is being
+viewed). Such information can be used to highlight that link or similar such
+usability enhancements.
+
+Sample Usage
+----------------
+
+While some menu locations (e.g., the primary navigation menu) may only ever
+contain a single menu, there are a number of circumstances for which the ability
+to automatically determine the correct menu to display is quite useful.
+
+For example, imagine that a site has a subnavigation menu area which shows links
+to the subsections/subpages for whatever page is currently being looked at. A
+"SubNavigation" ``MenuLocation`` could be defined, with a number of ``Menu``\s
+for each of the possible situations. Each of these ``Menu``\s would be
+associated with a :class:`~courant.core.news.models.Section` or
+:class:`~courant.core.pages.models.Page`, and they would contain ``MenuItem``\s
+that link to the appropriate set of subsections/subpages.
+
+Another example scenario would be a Sports section page, which might contain a
+list of sports for the current athletic season. Instead of manually changing
+this list of links on every season change, each season could be defined as a
+``Menu`` in a "SportsSeasons" ``MenuLocation``. The current season would have
+its ``active`` flag set, so that all that is required at every season change
+is switching which ``Menu`` has its ``active`` flag set. The ``MenuItem``\s
+of each could link to either sections or tags, depending on how the site is
+set up and configured.
+
+Template Usage
+================
+
+Like with any template tag library, you must first load it at the top of any
+template that will use a menu::
+
+    {% load menus %}
+    
+There is only one template tag which will be used, ``get_menu``. The tag is
+passed the name of the :class:`~courant.core.menus.models.MenuLocation` to
+be shown, as well as a variable name to store the menu data in::
+
+    {% get_menu <location_name as <varname> %}
+    
+For example, to store the data for the ``MenuLocation`` named "MainNavigation"
+in a variable called ``main_menu``::
+
+    {% get_menu "MainNavigation" as main_menu %}
+    
+The tag will look at the current page's :class:`~django.http.HttpRequest` object
+and determine the proper :class:`~courant.core.menus.models.Menu` to show for
+the given location.
+
+The tag will return a dictionary object with three keys:
+
+    ``menu``
+        The :class:`~courant.core.menus.models.Menu` instance to be shown.
+        
+    ``items``
+        A list of the :class:`~courant.core.menus.models.MenuItem`\s belonging
+        to this ``menu``.
+        
+    ``active_item``
+        The specific ``MenuItem``, if any, which represents the page currently
+        being viewed.
+        
+An example rendering of the menu::
+
+    {% get_menu "MainNavigation" as main_nav %}
+    <ul>
+    {% for item in main_nav.items %}
+        <li {% ifequal item main_nav.active_item %}class="active"{% endifequal %}>
+            <a href="{{ item.active_url }}">{{ item.name }}</a>
+        </li>
+    {% enfor %}
+    </ul>
+
+Reference
+================
+
+The ``MenuLocation`` Model
+--------------------------
+
+.. class:: models.MenuLocation
+
+    .. attribute:: models.MenuLocation.name
+    
+        A simple identifier, which will be used in the templates to specify the
+        appropriate menu location.
+    
+The ``Menu`` Model
+--------------------------
+
+.. class:: models.Menu
+
+    .. attribute:: models.Menu.name
+    
+        A simple identifier. By default, only used in the admin interface.
+        
+    .. attribute:: models.Menu.location
+    
+        The :class:`~courant.core.menus.models.MenuLocation` that this menu can
+        appear in.
+        
+    .. attribute:: models.Menu.active
+    
+        A flag that specifies that this menu should **always** be used for its
+        menu location. This is useful if a given menu location has contents that
+        rotate, but only one of which should ever be shown. Only one ``Menu``
+        for each ``MenuLocation`` should have this flag set.
+        
+    .. attribute:: models.Menu.url
+    
+        An arbitrary URL for which this ``Menu`` should be active in its
+        ``MenuLocation``. This is useful for showing menus on pages of your
+        site with which no content object is specifically related.
+        
+    .. attribute:: models.Menu.content_type
+    .. attribute:: models.Menu.object_id
+    
+        Another content object in the database, on whose page this ``Menu``
+        should be active for its ``MenuLocation``. Uses the object's
+        ``get_absolute_url`` function to determine the URL.
+
+The ``MenuItem`` Model
+--------------------------
+
+.. class:: models.MenuItem
+
+    .. attribute:: models.MenuItem.name
+    
+        The link text.
+        
+    .. attribute:: models.MenuItem.menu
+    
+        The :class:`~courant.core.menus.models.Menu` that this menu item will
+        appear in.
+        
+    .. attribute:: models.MenuItem.url
+    
+        An arbitrary URL to which this ``MenuItem`` should link.
+        
+    .. attribute:: models.MenuItem.content_type
+    .. attribute:: models.MenuItem.object_id
+    
+        Another content object in the database, to which this ``MenuItem`` will
+        link. Uses the object's ``get_absolute_url`` function to determine the
+        URL.
+        
+    .. attribute:: models.MenuItem.order
+    
+        A positive integere representing the order/place that this item holds
+        within its ``menu``.
+        
+    .. function:: models.MenuItem.active_url
+    
+        A model function that returns the URL that should be used for this
+        ``MenuItem``. It uses the ``url`` field if it is defined, or else the
+        result of ``get_absolute_url`` for the associated content object.
