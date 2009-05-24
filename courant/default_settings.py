@@ -34,7 +34,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'courant.core.caching.middleware.MemcachedMiddleware',
+    #'courant.core.caching.middleware.MemcachedMiddleware',
     'courant.core.countthis.middleware.CountThisMiddleware',
     'courant.core.siteconfig.middleware.LoadSettingsMiddleware',
     'courant.core.siteconfig.middleware.ExpireSettingsMiddleware',
@@ -83,7 +83,8 @@ INSTALLED_APPS = (
     'courant.core.utils',
     'courant.core.utils.captcha',
     'courant.core.gettag',
-    'courant.core.caching',
+    'courant.core.dynamic_models',
+    #'courant.core.caching',
     'courant.core.assets',
     'courant.core.staff',
     'courant.core.news',
