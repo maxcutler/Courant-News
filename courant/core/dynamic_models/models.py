@@ -114,6 +114,19 @@ class Attribute(models.Model):
     
     def _unicode__(self):
         return u'Attr - CT: %d, ID: %d' % (self.content_type_id, self.object_id)
+        
+    def __init__(self, *args, **kwargs):
+        # Add fields to the Attribute model based on the columns used by dynamic models.
+        # Fields added through the admin at runtime will get dynamically added (see
+        # DynamicTypeField's save() function), so this only needs to run once at server/
+        # python initialization
+        if not hasattr(self, '_introspected_columns'):
+            columns = DynamicTypeField.objects.distinct('column').values_list('column', 'value_type')
+            for column, value_type in columns:
+                field = DynamicTypeField.get_field_for_type(column, column, value_type)
+                Attribute.add_to_class(column, field)
+            self._introspected_columns=True
+        super(Attribute, self).__init__(*args, **kwargs)
 
 
 class DynamicModelBase(models.Model):
