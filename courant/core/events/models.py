@@ -6,6 +6,7 @@ from django.forms.fields import DateField
 from courant.core.utils.forms.widgets import SplitSelectDateTimeWidget
 from courant.core.gettag import gettag
 from courant.core.search import search
+from courant.core.dynamic_models.models import DynamicModelBase
 
 from tagging.fields import TagField
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
@@ -25,7 +26,7 @@ class EventType(models.Model):
         return self.name
 
 
-class Event(models.Model):
+class Event(DynamicModelBase):
     """
     A scheduled event.
     """

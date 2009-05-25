@@ -20,6 +20,7 @@ from courant.core.utils.managers import SubclassManager
 from courant.core.gettag import gettag
 from courant.core.search import search
 from courant.core.discussions.moderation import CourantModerator
+from courant.core.dynamic_models.models import DynamicModelBase
 
 
 class DisplayType(models.Model):
@@ -52,7 +53,7 @@ class IssueDisplayType(DisplayType):
     pass
 
 
-class Issue(models.Model):
+class Issue(DynamicModelBase):
     """
     Analog to the print edition of a newspaper or other publication. Specifies
     a collection of content published on a specific day.
@@ -109,7 +110,7 @@ class IssueArticle(models.Model):
         return u'%s: %s: %s' % (self.issue, self.article.section, self.article.heading)
 
 
-class Section(models.Model):
+class Section(DynamicModelBase):
     """
     A method for organizing content based on their general purpose or topic.
     A section can have an arbitary number of subsections, resulting in a
@@ -211,7 +212,7 @@ class LiveArticleManager(SubclassManager):
         return super(LiveArticleManager, self).get_query_set().filter(status__published=True)
 
 
-class Article(models.Model):
+class Article(DynamicModelBase):
     """
     An article, blog post, or other piece of text-based content.
     """
