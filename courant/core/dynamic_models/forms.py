@@ -9,7 +9,7 @@ class DynamicTypeAdminForm(forms.ModelForm):
         choices = []
         for subclass in DynamicModelBase.__subclasses__():
             ct = ContentType.objects.get_for_model(subclass)
-            choices.append((ct.id, unicode(ct))) 
+            choices.append((ct.id, subclass._meta.verbose_name_plural.title())) 
         return choices
 
     def __init__(self, *args, **kwargs):
