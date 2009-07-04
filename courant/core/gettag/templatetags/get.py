@@ -20,7 +20,6 @@ register = Library()
 
 def model_from_name(name):
     model = gettag.from_name(name)
-    assert False, gettag._singular_names
     if not model:
         raise TemplateSyntaxError, "Invalid model provided: %s" % name
     return model
