@@ -59,7 +59,7 @@ Technical Overview
 =====================
 
 Behind the scenes, this feature uses an
-`Entity-Attribute-Value system <http://en.wikipedia.org/wiki/Entity-attribute-value_model>`
+`Entity-Attribute-Value system <http://en.wikipedia.org/wiki/Entity-attribute-value_model>`_
 to store the data.
 
 This means that an extra query is required when accessing

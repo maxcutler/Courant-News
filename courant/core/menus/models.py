@@ -100,7 +100,7 @@ class MenuItem(models.Model):
         if self.url:
             return self.url
         else:
-            return str(self.content_object)
+            return unicode(self.content_object)
         
     def active_url(self):
         """
