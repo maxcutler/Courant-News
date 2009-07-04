@@ -19,7 +19,7 @@ def article_detailed(request, section=None, slug=None, year=None, month=None, da
         kwargs['published_at__day'] = int(day)
     if not request.user.is_superuser:
         kwargs['status__published'] = True
-    article = Article.objects.get(**kwargs).as_leaf_class()
+    article = Article.objects.get(**kwargs)
     return render(request, [template, 'articles/%s' % article.display_type.template_name], {'article': article})
 
 

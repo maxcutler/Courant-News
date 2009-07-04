@@ -1,0 +1,70 @@
+.. _ref-core-dynamictypes:
+
+========================================
+Dynamic Types
+========================================
+
+.. module:: courant.core.dynamic_models
+    :synopsis: Customize built-in models with additional fields
+    
+This document explains the system for extending the models that ship with
+Courant News by default. It allows for the addition and grouping of fields to
+create new virtual model types that can be accessed through the template
+system and through the admin interface.
+
+Introduction
+=====================
+
+Courant News comes with a number of built-in models, which are often designed
+as a core/common subset of functionality as required by most news organizations.
+However, in many cases, news organizations will require additional data fields
+on some of these types.
+
+In accordance with the Courant News philosophy of not requiring modifications
+to the core platform, as well as that of not requiring coding wherever possible,
+the dynamic model system allows site operators to create and manage their
+dynamic types through the admin interface; no coding, and no server restarts
+required.
+
+Dynamic Types
+=====================
+
+.. class:: models.DynamicType
+
+While the ability to add additional data fields to, for example, the Article
+model, some of those fields may only be applicable to certain groups of
+articles, and others to other groups of articles. As a result, multiple
+``DynamicType``\s can be associated with any given base model (Article, in this
+example) representing such groupings.
+
+Dynamic Type Fields
+=====================
+
+.. class:: models.DynamicTypeField
+
+Courant News currently supports four types of dynamic type fields: booleans
+(true/false values), integers, short text fields (less than 255 characters), and
+long text fields (no length limits). More types will be added in the future, but
+the decision of which types to implement will be driven by community feedback
+(so speak up on the mailing list!).
+
+Integration with Get Tag
+=====================
+
+This feature integrates with the :ref:`get tag <ref-core-gettag>`, which means
+that any ``DynamicType`` definitions can be specified as the model in a ``get``
+tag call. See the documentation for that feature for further information.
+
+Technical Overview
+=====================
+
+Behind the scenes, this feature uses an
+`Entity-Attribute-Value system <http://en.wikipedia.org/wiki/Entity-attribute-value_model>`
+to store the data.
+
+This means that an extra query is required when accessing
+dynamic fields on a model, although after the first time such a field is
+accessed for a particular model instance, *all* the dynamic fields for that
+instance's dynamic type are retrieved and cached. As a result, the 'cost' of
+retreiving these dynamic fields is only incurred if one of them is used, and
+it is only paid once per instance.

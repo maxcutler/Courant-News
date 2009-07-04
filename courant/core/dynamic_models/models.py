@@ -15,6 +15,7 @@ class DynamicType(models.Model):
     
     base = models.ForeignKey(ContentType)
     name = models.CharField(max_length=100)
+    name_plural = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
     
     def __unicode__(self):
@@ -96,6 +97,7 @@ class DynamicTypeField(models.Model):
         field.name = name
         field.attname = name
         field.column = column
+        field.db_column = column
         return field
     
 class Attribute(models.Model):
@@ -120,13 +122,13 @@ class Attribute(models.Model):
         # Fields added through the admin at runtime will get dynamically added (see
         # DynamicTypeField's save() function), so this only needs to run once at server/
         # python initialization
+        super(Attribute, self).__init__(*args, **kwargs)
         if not hasattr(Attribute, '_introspected_columns'):
             columns = DynamicTypeField.objects.distinct('column').values_list('column', 'value_type')
             for column, value_type in columns:
                 field = DynamicTypeField.get_field_for_type(column, column, value_type)
                 Attribute.add_to_class(column, field)
             setattr(Attribute, '_introspected_columns', True)
-        super(Attribute, self).__init__(*args, **kwargs)
 
 
 class DynamicModelBase(models.Model):
@@ -135,25 +137,27 @@ class DynamicModelBase(models.Model):
     through the admin interface.
     """
     
-    dynamic_type = models.ForeignKey(DynamicType, null=True)
+    dynamic_type = models.ForeignKey(DynamicType, null=True, default=None)
     
     class Meta:
         abstract = True
         
     def save(self, force_insert=False, force_update=False):
+        # we need the non-dynamic part of the model to have an ID in the database
+        # for the attribute FK, so we need to save that first
+        super(DynamicModelBase, self).save(force_insert, force_update)
+        
         # check for the existance of dynamic field attributes on the model
         # instance, which means that either one of the fields was accessed or
         # a value was set (without ever getting the value)
         if self.dynamic_type:
             dfields = DynamicTypeField.objects.filter(dynamic_type=self.dynamic_type)
-            attrs = Attribute.objects.get(content_type=ContentType.objects.get_for_model(self),
-                                              object_id=self.pk)
+            attrs, created = Attribute.objects.get_or_create(content_type=ContentType.objects.get_for_model(self),
+                                                             object_id=self.pk)
             for dfield in dfields:
                 if hasattr(self, dfield.name):
                     setattr(attrs, dfield.column, getattr(self, dfield.name))   
             attrs.save()
-        
-        super(DynamicModelBase, self).save(force_insert, force_update)
         
     def __getattr__(self, name):
         # a model attribute was not found, so it could be an attempt to access
@@ -163,9 +167,15 @@ class DynamicModelBase(models.Model):
         # simply return the value without processing); the assumption is that
         # if one dynamic field is accessed, it is likely that another dynamic
         # field will be accessed in the lifetime of the model instance.
-        if self.dynamic_type and not name.startswith('_'):            
+        if 'dynamic_type' not in name and self.dynamic_type and not name.startswith('_'):            
             dfields = DynamicTypeField.objects.filter(dynamic_type=self.dynamic_type)
             if name in [field.name for field in dfields]:
+                
+                # if this is the first time an Attribute has been created,
+                # then create a dummy one to force the introspection to happen
+                if name not in Attribute._meta.get_all_field_names():
+                    Attribute()
+                    
                 attrs = Attribute.objects.get(content_type=ContentType.objects.get_for_model(self),
                                               object_id=self.pk)
                 for field in dfields:

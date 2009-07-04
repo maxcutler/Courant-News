@@ -33,6 +33,9 @@ Core modules
     :ref:`Discussions <ref-core-discussions>`
         Moderation and other enhancements for Django's comments app.
         
+    :ref:`Dynamic Types <ref-core-dynamictypes>`
+        Customize built-in models with additional fields.
+        
     :ref:`Emailthis <ref-core-emailthis>`
         Allows visitors to share content with friends via email.
         

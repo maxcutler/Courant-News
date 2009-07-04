@@ -12,6 +12,7 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 
 from courant.core.utils.text import split_contents
 from courant.core.gettag import gettag
+from courant.core.dynamic_models.models import DynamicType
 
 from datetime import timedelta, datetime, date
 
@@ -19,6 +20,7 @@ register = Library()
 
 def model_from_name(name):
     model = gettag.from_name(name)
+    assert False, gettag._singular_names
     if not model:
         raise TemplateSyntaxError, "Invalid model provided: %s" % name
     return model
@@ -54,7 +56,12 @@ class GetNode(Node):
       model_name = model.__name__.lower()
       
       # Base queryset to filter on
-      q = model.objects.all()
+      opts = gettag.from_model(model)
+      if opts.get('is_dynamic', False) and self.params['app_model'] not in opts.get('non_dynamic_names', ''):
+         dType = DynamicType.objects.get(pk=gettag.from_model(model).get('dynamic_map').get(self.params['app_model'], None))
+         q = model.objects.filter(dynamic_type=dType)
+      else:
+         q = model.objects.all()
       
       # flag to mark if a value was set before reaching the end of the render
       # function because of a special case

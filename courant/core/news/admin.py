@@ -69,8 +69,8 @@ class ArticleIssueInline(admin.TabularInline):
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'published_at'
-    list_display = ['heading', 'section', 'published_at', 'status']
-    list_filter = ['published_at', 'status', 'display_type', 'section']
+    list_display = ['heading', 'section', 'published_at', 'status', 'dynamic_type']
+    list_filter = ['published_at', 'status', 'display_type', 'section','dynamic_type']
     search_fields = ['heading']
     prepopulated_fields = {'slug': ('heading',)}
 

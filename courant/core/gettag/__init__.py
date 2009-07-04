@@ -1,3 +1,9 @@
+from courant.core.dynamic_models.models import DynamicModelBase, DynamicType
+
+from django.contrib.contenttypes.models import ContentType
+from django.db.models.base import Model
+from django.db.models.signals import post_save, post_delete
+
 class AlreadyRegistered(Exception):
     """
     An attempt was made to register a model for get tag more than once.
@@ -25,12 +31,20 @@ class GetTag(object):
                 'with': with_func,
                 'in': in_func,
                 'filter': filter_func}
-        self._registry[model] = opts
+        
         pname = unicode(model._meta.verbose_name_plural).lower().replace(' ', '_')
         sname = unicode(model._meta.verbose_name).lower().replace(' ', '_')
         self._plural_names[(plural_name or pname)] = model
         self._singular_names[(singular_name or sname)] = model
         
+        self._registry[model] = opts
+        
+        # auto-register any existing dynamic model configurations of this model
+        if issubclass(model, DynamicModelBase):
+            self._registry[model]['is_dynamic'] = True
+            self._registry[model]['non_dynamic_names'] = [sname, pname]
+            self.update_dynamic_registrations(model)
+
     def unregister(self, model):
         if model in self._registry:
             del self._registry[model]
@@ -48,8 +62,29 @@ class GetTag(object):
         elif name in self._singular_names:
             return self._singular_names[name]
         return None
-    
+
     def from_model(self, model):
         return self._registry.get(model, None)
         
+    def update_dynamic_registrations(self, model):
+        if issubclass(model, DynamicModelBase): #sanity check
+            self._registry[model]['dynamic_map'] = {}
+            dTypes = DynamicType.objects.filter(base=ContentType.objects.get_for_model(model))
+            for dType in dTypes:
+                sname =dType.name.lower().replace(' ', '_')
+                pname = dType.name_plural.lower().replace(' ', '_')
+                self._plural_names[pname] = model
+                self._singular_names[sname] = model
+                self._registry[model]['dynamic_map'][sname] = dType.pk
+                self._registry[model]['dynamic_map'][pname] = dType.pk
+
 gettag = GetTag()
+
+def update_dynamic_model_registrations(sender, instance, **kwargs):
+    gettag.update_dynamic_registrations(instance.base.model_class())
+post_save.connect(update_dynamic_model_registrations, sender=DynamicType)
+
+def remove_dynamic_model_registration(sender, instance, **kwargs):
+    del gettag._singular_names[instance.name.lower().replace(' ', '_')]
+    del gettag._plural_names[instance.name_plural.lower().replace(' ', '_')]
+post_delete.connect(remove_dynamic_model_registration, sender=DynamicType)

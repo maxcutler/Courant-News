@@ -200,13 +200,13 @@ class ArticleStatus(models.Model):
         return self.name
 
 
-class ArticleManager(SubclassManager):
+class ArticleManager(models.Manager):
 
     def with_media(self):
         return self.get_query_set().filter(media__pk__gt=0)
 
 
-class LiveArticleManager(SubclassManager):
+class LiveArticleManager(models.Manager):
 
     def get_query_set(self):
         return super(LiveArticleManager, self).get_query_set().filter(status__published=True)
@@ -259,21 +259,6 @@ class Article(DynamicModelBase):
 
     def __unicode__(self):
         return self.heading
-    
-    def save(self, *args, **kwargs):
-        if(not self.content_type):
-            self.content_type = ContentType.objects.get_for_model(self.__class__)
-        self.save_base(*args, **kwargs)
-
-    def as_leaf_class(self):
-        """
-        Casts to actual content type.
-        """
-        content_type = self.content_type
-        model = content_type.model_class()
-        if (model == Article):
-            return self
-        return model.objects.get(id=self.id)
 
     @models.permalink
     def get_absolute_url(self):

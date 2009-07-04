@@ -150,29 +150,6 @@ associated with articles, it is possible to create custom
 Custom ``Article`` Types
 ------------------------
 
-The ``Article`` model can take advantage of model inheritance to allow for
-any queries against it to also return instances of any ``Article``-derived
-model. Simply import the ``Article`` model and use that as the custom model's
-base class instead of :class:`django.db.models.Model`::
-
-    from django.db import models
-    from courant.core.news.models import Article
-    
-    class CustomArticle(Article):
-        special_field = models.CharField(...)
-        
-Then, either in python code or when using the :ref:`get tag <ref-core-gettag>`,
-any queries using the ``Article`` model will return instances of whatever child
-model they were created as::
-
-    >>> from courant.core.news.models import Article
-    >>> from myapp.models import CustomArticle
-    >>> normal_article = Article(heading="A normal article", ...)
-    >>> custom_article = CustomArticle(heading="A Custom Article", ...)
-    >>> another_article = Article(heading="Yet another normal article", ...)
-    >>> Article.objects.all()
-        [<Article: A normal article>, <CustomArticle: A Custom Article>,
-         <Article: Yet another normal article>]
-
-In this manner, it is easy for sites to create their own custom ``Article`` types
-which tie seamlessly into the rest of the Courant News system. 
+The ``Article`` model can take advantage of the dynamic type system to create
+custom article types. Please read the
+:ref:`dynamic type documentation <ref-core-dynamicmodels>`.

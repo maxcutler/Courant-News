@@ -24,6 +24,7 @@ Core modules
       * :ref:`Contact Form <ref-core-contactform>`
       * :ref:`Countthis <ref-core-countthis>`
       * :ref:`Discussions <ref-core-discussions>`
+      * :ref:`Dynamic Types <ref-core-dynamictypes>`
       * :ref:`Emailthis <ref-core-emailthis>`
       * :ref:`Events <ref-core-events>`
       * :ref:`Get Tag <ref-core-gettag>`
