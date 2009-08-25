@@ -64,8 +64,6 @@ urlpatterns = patterns('',
     (r'^profiles/', include('courant.core.profiles.urls')),
 
     (r'^mostpopular/', include('courant.core.countthis.urls')),
-    
-    (r'^subscribe/', include('courant.core.email_subscriptions.urls')),
 
     (r'^', include('courant.core.news.urls')),
     (r'^pages/', include('courant.core.pages.urls')),

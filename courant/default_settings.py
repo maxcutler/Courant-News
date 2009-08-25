@@ -94,7 +94,6 @@ INSTALLED_APPS = (
     'courant.core.news',
     'courant.core.contact_form',
     'courant.core.emailthis',
-    'courant.core.email_subscriptions',
     'courant.core.sharethis',
     'courant.core.countthis',
     'courant.core.events',
