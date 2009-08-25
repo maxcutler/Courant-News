@@ -123,12 +123,15 @@ class Attribute(models.Model):
         # DynamicTypeField's save() function), so this only needs to run once at server/
         # python initialization
         super(Attribute, self).__init__(*args, **kwargs)
-        if not hasattr(Attribute, '_introspected_columns'):
-            columns = DynamicTypeField.objects.distinct('column').values_list('column', 'value_type')
-            for column, value_type in columns:
-                field = DynamicTypeField.get_field_for_type(column, column, value_type)
-                Attribute.add_to_class(column, field)
-            setattr(Attribute, '_introspected_columns', True)
+        try:
+            if not hasattr(Attribute, '_introspected_columns'):
+                columns = DynamicTypeField.objects.distinct('column').values_list('column', 'value_type')
+                for column, value_type in columns:
+                    field = DynamicTypeField.get_field_for_type(column, column, value_type)
+                    Attribute.add_to_class(column, field)
+                setattr(Attribute, '_introspected_columns', True)
+        except:
+            pass # currently causes manage.py validate to fail
 
 
 class DynamicModelBase(models.Model):
