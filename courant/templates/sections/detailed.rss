@@ -1,12 +1,11 @@
 {% extends "base.rss" %}
 {% load rss %}
-{% load sections %}
 
 {% block html_link %}http://{{ request.get_host }}{{ section.get_absolute_url }}{% endblock %}
 {% block title %}{{ section }}{% endblock %}
-{% block description %}I have no idea what to put here!{% endblock %}
+{% block description %}{% endblock %}
 
 {% block items %}
-    {% get_latest_from section 20 as section_articles %}
+    {% get articles in section section limit 20 as section_articles %}
     {% rss_article_items section_articles %}
 {% endblock %}

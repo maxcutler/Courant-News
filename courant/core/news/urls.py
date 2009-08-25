@@ -9,5 +9,5 @@ urlpatterns = patterns('',
     url(r'^issues/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',issue_archive, name="issue_archive"),
     url(r'^(?P<section>[-\w\/]+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[-\w]+)/$', article_detailed,name="article_detailed"),
     url(r'^(?P<section>[-\w\/]+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<slug>[-\w]+)/comments/$', article_detailed, {'template': 'articles/comments'},name="article_comments"),
-    url(r'(?P<path>.*)/$', section_detailed, name="section_detailed"),
+    url(r'^section/(?P<path>.*)/$', section_detailed, name="section_detailed"),
 )

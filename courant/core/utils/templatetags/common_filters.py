@@ -1,20 +1,3 @@
-"""
-Template filters to partition lists into rows or columns.
-
-A common use-case is for splitting a list into a table with columns::
-
-    {% load partition %}
-    <table>
-    {% for row in mylist|columns:3 %}
-        <tr>
-        {% for item in row %}
-            <td>{{ item }}</td>
-        {% endfor %}
-        </tr>
-    {% endfor %}
-    </table>
-"""
-
 from django.template import Library
 
 register = Library()
@@ -52,7 +35,33 @@ def truncatesmart(value, limit=80):
     
     # Join the words and return
     return ' '.join(words) + '...'
+    
+@register.filter
+def urlext(url, extension):
+    """
+    Converts URL to target filetype.
+    
+    Usage:
+        {{ url|urlext:"rss" }}
+    """
+    return "%s.%s" % (url.rstrip('/'), extension)
 
+"""
+Template filters to partition lists into rows or columns.
+
+A common use-case is for splitting a list into a table with columns::
+
+    {% load partition %}
+    <table>
+    {% for row in mylist|columns:3 %}
+        <tr>
+        {% for item in row %}
+            <td>{{ item }}</td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+"""
 
 def rows(thelist, n):
     """

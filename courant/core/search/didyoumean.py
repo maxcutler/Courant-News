@@ -19,8 +19,9 @@ try:
     file = open(settings.PROJECT_PATH + '/courant/search/words.marshal', 'rb')
 except IOError:
     #File doesn't exist
-    NWORDS = train(words(file(settings.PROJECT_PATH + '/courant/search/words.txt').read()))
-    marshal.dump(NWORDS,open(settings.PROJECT_PATH + '/courant/search/words.marshal', 'wb'))
+    #NWORDS = train(words(file(settings.PROJECT_PATH + '/courant/search/words.txt').read()))
+    #marshal.dump(NWORDS,open(settings.PROJECT_PATH + '/courant/search/words.marshal', 'wb'))
+    pass
 else:
     #File does exist, load it
     NWORDS = marshal.load(file)

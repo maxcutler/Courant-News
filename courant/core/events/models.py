@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from django.forms.fields import DateField
+from django.forms.fields import DateField, TimeField
 
-from courant.core.utils.forms.widgets import SplitSelectDateTimeWidget
+from courant.core.utils.forms.widgets import SplitSelectDateTimeWidget, SelectTimeWidget
 from courant.core.gettag import gettag
 from courant.core.search import search
 from courant.core.dynamic_models.models import DynamicModelBase
@@ -24,7 +24,7 @@ class EventType(models.Model):
 
     def __unicode__(self):
         return self.name
-
+gettag.register(EventType)
 
 class Event(DynamicModelBase):
     """
@@ -80,6 +80,7 @@ search.register(Event,
 
 class EventForm(ModelForm):
     date = DateField(widget=SplitSelectDateTimeWidget(twelve_hr=True))
+    end_time = TimeField(widget=SelectTimeWidget(twelve_hr=True))
 
     class Meta:
         exclude = ('slug', 'start_time', 'submitted_by', 'verified')

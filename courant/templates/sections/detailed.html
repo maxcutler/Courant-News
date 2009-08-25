@@ -4,7 +4,7 @@
 
 {% block extrahead %}
 {{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="{{ section }} RSS" href="{{ section.get_absolute_url|slice:":-1" }}.rss" >
+<link rel="alternate" type="application/rss+xml" title="{{ section }} RSS" href="{{ section.get_absolute_url|urlext:"rss" }}" >
 {% endblock %}
 
 {% block content %}

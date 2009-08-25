@@ -7,7 +7,7 @@ a web interface, and a subclass demonstrating useful functionality.
 
 from django import forms
 from django.conf import settings
-from django.core.mail import send_mail
+from courant.core.mailer import send_mail
 from django.template import loader, RequestContext
 from django.contrib.sites.models import Site
 
@@ -201,7 +201,7 @@ class ContactForm(forms.Form):
         Builds and sends the email message.
 
         """
-        send_mail(fail_silently=fail_silently, **self.get_message_dict())
+        send_mail(priority="high", fail_silently=fail_silently, **self.get_message_dict())
 
 
 class AkismetContactForm(ContactForm):
@@ -232,8 +232,8 @@ class AkismetContactForm(ContactForm):
 
 
 class CourantContactForm(AkismetContactForm):
-    to = forms.ChoiceField(settings.CONTACT_FORM_CONTACTS)
+    to = forms.ChoiceField(settings.CONTACT_FORM_CONTACTS, widget=forms.RadioSelect())
 
     def save(self, fail_silently=False):
-        self.recipient_list = (self.cleaned_data['to'], )
+        self.recipient_list = self.cleaned_data['to'].split(';')
         super(CourantContactForm, self).save()

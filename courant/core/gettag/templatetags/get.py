@@ -227,7 +227,9 @@ class GetNode(Node):
             if self.params['from_timeperiod'] == 'today':
                day = date.today()
             else:
-               day = resolve_param(self.params['from_timeperiod'], func=datetime)
+               day = resolve_param(self.params['from_timeperiod'], context)
+               if not (isinstance(day, datetime) or isinstance(day, date)):
+                  day = resolve_param(self.params['from_timeperiod'], context, func=datetime)
             offset = datetime.isoweekday(day) % 7 #sunday is first day of week
             start = day + timedelta(-offset)
             end = day + timedelta(7-offset-1)

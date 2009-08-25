@@ -13,7 +13,9 @@ sitemaps.update(events_sitemaps)
 sitemaps.update(pages_sitemaps)
 
 from courant.core.siteconfig.forms import SettingsForm
+#from courant.core import nando
 admin.autodiscover()
+#nando.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
@@ -23,7 +25,9 @@ urlpatterns = patterns('',
         {'form_class': SettingsForm}),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/obj_lookup/$', 'courant.core.genericadmin.views.generic_lookup'),
-    (r'^admin/(.*)', admin.site.root),
+    (r'^admin/', include(admin.site.urls)),
+    
+    #(r'^nando/', include(nando.site.urls)), 
 
     (r'^%s(?P<path>.*)$' % settings.COURANT_ADMIN_MEDIA_URL[1:],
         'django.views.static.serve',
@@ -54,13 +58,15 @@ urlpatterns = patterns('',
 
     (r'^media/', include('courant.core.media.urls')),
 
-    (r'^search', include('courant.core.search.urls')),
+    (r'^search/', include('courant.core.search.urls')),
 
     (r'^accounts/', include('courant.core.registration.urls')),
     (r'^profiles/', include('courant.core.profiles.urls')),
 
     (r'^mostpopular/', include('courant.core.countthis.urls')),
+    
+    (r'^subscribe/', include('courant.core.email_subscriptions.urls')),
 
     (r'^', include('courant.core.news.urls')),
-    (r'^', include('courant.core.pages.urls')),
+    (r'^pages/', include('courant.core.pages.urls')),
 )

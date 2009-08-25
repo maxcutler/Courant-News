@@ -15,7 +15,7 @@ class CourantModerator(CommentModerator):
             return False
 
         # otherwise just return whether or not comments are open
-        return comments_open(content_object)
+        return self.comments_open(content_object)
 
     def moderate(self, comment, content_object):
         opts = content_object.comment_options
@@ -26,7 +26,7 @@ class CourantModerator(CommentModerator):
             return False
 
         # check the time delta to see if that matches the parameters
-        if self._get_delta(datetime.datetime.now(), obj.published_at).days >= opts.moderate_after:
+        if self._get_delta(datetime.datetime.now(), content_object.published_at).days >= opts.moderate_after:
             return True
 
         # if it didn't match the time limit then let it go public

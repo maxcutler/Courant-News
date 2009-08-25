@@ -2,7 +2,7 @@ from django.template import Library, Node, Variable
 from django.template.loader import get_template
 from courant.core.search.didyoumean import get_didyoumean
 
-register = Library()
+#register = Library()
 
 class DidYouMeanNode(Node):
     def __init__(self, terms, min, count):
@@ -43,4 +43,4 @@ def didyoumean(parser, token):
             min = None
             count = None
     return DidYouMeanNode(bits[1], min, count)
-didyoumean = register.tag(didyoumean)
+#didyoumean = register.tag(didyoumean)

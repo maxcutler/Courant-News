@@ -1,5 +1,6 @@
 from django.contrib import admin
 from courant.core.news.models import *
+import notifications
 
 class IssueArticleInline(admin.TabularInline):
     model = IssueArticle
@@ -27,6 +28,22 @@ class IssueAdmin(admin.ModelAdmin):
     )
     
     inlines = (IssueArticleInline,)
+    
+    actions = ('send_email_update', )
+
+    def send_email_update(self, request, queryset):
+        for issue in queryset:
+            options = {
+                'subject': u'YDN Headlines: %s' % (issue.published_at.strftime("%B %d, %Y")),
+                'from_address': 'headlines@yaledailynews.com',
+                'from_name': 'Yale Daily News',
+                'data': issue,
+                'text_template': 'issues/email.txt',
+                'html_template': 'issues/email.html'
+            }
+            count = notifications.send_email_update(**options)
+            self.message_user(request, "Email update submitted. %d emails queued for delivery." % count)
+    send_email_update.short_description = 'Send email update'
 admin.site.register(Issue, IssueAdmin)
 
 
@@ -95,6 +112,23 @@ class ArticleAdmin(admin.ModelAdmin):
         ArticleMediaInline,
         ArticleIssueInline,
     ]
+    
+    actions = ('send_email_update', )
+
+    def send_email_update(self, request, queryset):
+        for article in queryset:
+            options = {
+                'subject': u'YDN Update: %s' % article.heading,
+                'from_address': 'headlines@yaledailynews.com',
+                'from_name': 'Yale Daily News',
+                'data': article,
+                'text_template': 'articles/email.txt',
+                'html_template': 'articles/email.html'
+            }
+            count = notifications.send_email_update(**options)
+            self.message_user(request, "Email update submitted. %d emails queued for delivery." % count)
+    send_email_update.short_description = 'Send email update'
+    
 admin.site.register(Article, ArticleAdmin)
 
 # Remove the admin section for tagging's TaggedItem model,

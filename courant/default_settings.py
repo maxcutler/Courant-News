@@ -43,6 +43,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'courant.core.mobile.middleware.MobileMiddleware',
+    'courant.contrib.shorturls.middleware.ShortUrlMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'courant.core.pages.middleware.TemplatePagesMiddleware',
     'courant.core.maintenancemode.middleware.MaintenanceModeMiddleware',
@@ -79,10 +80,13 @@ INSTALLED_APPS = (
     'pagination',
     'djangosphinx',
     'django_extensions',
+    'haystack',
+    'chronograph',
 
     'courant.core.utils',
     'courant.core.utils.captcha',
     'courant.core.gettag',
+    #'courant.core.nando', 
     'courant.core.dynamic_models',
     #'courant.core.caching',
     'courant.core.assets',
@@ -90,6 +94,7 @@ INSTALLED_APPS = (
     'courant.core.news',
     'courant.core.contact_form',
     'courant.core.emailthis',
+    'courant.core.email_subscriptions',
     'courant.core.sharethis',
     'courant.core.countthis',
     'courant.core.events',
@@ -103,6 +108,7 @@ INSTALLED_APPS = (
     'courant.core.genericadmin',
     'courant.core.pages',
     'courant.core.siteconfig',
+    'courant.core.mailer',
 )
 
 # Added for Django Debug Toolbar

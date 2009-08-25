@@ -113,7 +113,7 @@ def do_default(parser, token):
       {% set_default width 250 %}
       {% set_default name "John Smith" %}
    """
-   bits = token.contents.split()
+   bits = split_contents(token)
    if len(bits) != 3:
       raise TemplateSyntaxError, "set_default: Invalid template tag parameters."
    return DefaultNode(bits[1], bits[2])
