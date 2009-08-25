@@ -5,6 +5,9 @@
 -e svn+http://django-sphinx.googlecode.com/svn/trunk/#egg=djangosphinx
 -e svn+http://django-mptt.googlecode.com/svn/trunk#egg=mptt
 -e svn+http://django-pagination.googlecode.com/svn/trunk#egg=pagination
--e svn+http://sorl-thumbnail.googlecode.com/svn/trunk#egg=sorl
+-e hg+http://sorl-thumbnail.googlecode.com/hg/#egg=sorl
+-e svn+http://django-chronograph.googlecode.com/svn/trunk#egg=chronograph
 -e git://github.com/robhudson/django-debug-toolbar.git#egg=debug_toolbar
 -e git://github.com/jezdez/django-comment-utils.git#egg=comment_utils
+http://labix.org/download/python-dateutil/python-dateutil-1.4.1.tar.gz
+-e git://github.com/toastdriven/django-haystack.git#egg=haystack
