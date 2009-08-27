@@ -129,9 +129,13 @@ class Attribute(models.Model):
                 for column, value_type in columns:
                     field = DynamicTypeField.get_field_for_type(column, column, value_type)
                     Attribute.add_to_class(column, field)
-                setattr(Attribute, '_introspected_columns', True)
         except:
-            pass # currently causes manage.py validate to fail
+            # if the database tables have not yet been created, the columns query above will fail.
+            # thus we need to roll back that broken transaction and continue on our merry way
+            from django.db import connection
+            connection.cursor().execute('rollback')
+
+        setattr(Attribute, '_introspected_columns', True)
 
 
 class DynamicModelBase(models.Model):
