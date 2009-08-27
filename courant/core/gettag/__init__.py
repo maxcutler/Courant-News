@@ -15,6 +15,7 @@ class GetTag(object):
         self._registry = {}
         self._plural_names = {}
         self._singular_names = {}
+        self._dynamic_initialized = False
 
     def register(self, model, name_field='name',
                  singular_name=None, plural_name=None,
@@ -38,12 +39,6 @@ class GetTag(object):
         self._singular_names[(singular_name or sname)] = model
         
         self._registry[model] = opts
-        
-        # auto-register any existing dynamic model configurations of this model
-        if issubclass(model, DynamicModelBase):
-            self._registry[model]['is_dynamic'] = True
-            self._registry[model]['non_dynamic_names'] = [sname, pname]
-            self.update_dynamic_registrations(model)
 
     def unregister(self, model):
         if model in self._registry:
@@ -56,6 +51,7 @@ class GetTag(object):
                     del self._singular_names[name]
     
     def from_name(self, name):
+        self.update_all_dynamic_registrations()
         name = name.lower()
         if name in self._plural_names:
             return self._plural_names[name]
@@ -64,6 +60,7 @@ class GetTag(object):
         return None
 
     def from_model(self, model):
+        self.update_all_dynamic_registrations()
         return self._registry.get(model, None)
         
     def update_dynamic_registrations(self, model):
@@ -77,6 +74,22 @@ class GetTag(object):
                 self._singular_names[sname] = model
                 self._registry[model]['dynamic_map'][sname] = dType.pk
                 self._registry[model]['dynamic_map'][pname] = dType.pk
+                
+    def update_all_dynamic_registrations(self):
+        if self._dynamic_initialized:
+            return
+        
+        from django.db import models
+        for model in models.get_models():
+            # auto-register any existing dynamic model configurations of this model
+            if issubclass(model, DynamicModelBase) and self._registry.get(model, None):
+                sname = [k for k, v in self._singular_names.iteritems() if v == model][0]
+                pname = [k for k, v in self._plural_names.iteritems() if v == model][0]
+                self._registry[model]['is_dynamic'] = True
+                self._registry[model]['non_dynamic_names'] = [sname, pname]
+                self.update_dynamic_registrations(model)    
+
+        self._dynamic_initialized = True
 
 gettag = GetTag()
 
