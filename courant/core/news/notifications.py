@@ -1,7 +1,10 @@
 from django.template.loader import render_to_string
 
 from courant.core.mailer.models import MessageJob
-from courant.core.email_subscriptions.models import EmailSubscription
+try:
+	from apps.email_subscriptions.models import EmailSubscription
+except:
+	pass
 from courant.core.profiles.models import UserProfile
 from models import *
 

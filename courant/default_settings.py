@@ -104,7 +104,7 @@ INSTALLED_APPS = (
     'courant.core.profiles',
     'courant.core.ads',
     'courant.core.menus',
-    'courant.core.genericadmin',
+    #'courant.core.genericadmin',
     'courant.core.pages',
     'courant.core.siteconfig',
     'courant.core.mailer',
