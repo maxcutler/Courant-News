@@ -12,7 +12,7 @@ class Staffer(models.Model):
     user = models.OneToOneField(User, blank=True, null=True,
                                 help_text="Optional, but recommended.")
     slug = models.SlugField()
-    position = models.CharField(max_length=50)
+    position = models.CharField(max_length=255)
 
     # denormalization if a user is linked to this staffer, or else holds the
     # staffer's name if they do not have a user account
