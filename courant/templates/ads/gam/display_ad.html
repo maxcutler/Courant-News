@@ -1,4 +1,4 @@
-{% if not debug %}
+{% if not debug and account_id %}
 <script type="text/javascript">
     GA_googleFillSlotWithSize("{{ account_id }}", "{{ name }}", {{ width }}, {{ height }});
 </script>
