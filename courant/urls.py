@@ -66,5 +66,5 @@ urlpatterns = patterns('',
     (r'^mostpopular/', include('courant.core.countthis.urls')),
 
     (r'^', include('courant.core.news.urls')),
-    (r'^pages/', include('courant.core.pages.urls')),
+    (r'^', include('courant.core.pages.urls')),
 )
