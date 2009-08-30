@@ -4,6 +4,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.dispatch import dispatcher
 from django.template.defaultfilters import slugify
+from django.template import VariableDoesNotExist
 
 import tagging
 from tagging.fields import TagField
