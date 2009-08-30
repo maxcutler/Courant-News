@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.dispatch import dispatcher
+from django.template.defaultfilters import slugify
 
 import tagging
 from tagging.fields import TagField
