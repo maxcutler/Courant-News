@@ -13,7 +13,7 @@ def send_email_update(subject, from_address, from_name, data, html_template=None
     subscribed_users = UserProfile.objects.filter(subscribed=True).values_list('user__email', flat=True)
     recipient_list = list(set(raw_subscriptions) | set(subscribed_users)) # union
     
-    msg = MessageJob(from_address=from_address,
+    msg = MessageJob(from_address='%s <%s>' % (from_name, from_address),
                      subject=subject,
                      recipient_list=';'.join(recipient_list))
     msg.message_body = render_to_string(text_template, {'data': data})
