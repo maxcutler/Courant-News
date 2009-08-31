@@ -6,8 +6,7 @@ from haystack.query import SearchQuerySet
 from haystack.views import SearchView
 
 urlpatterns = patterns('',
-    url(r'', SearchView(template='search/results_page.html',
-                        load_all=True,
-                        form_class=ModelSearchForm,
-                        searchqueryset=SearchQuerySet().all()), name="search"),
+    url(r'', CourantSearchView(template='search/results_page.html',
+                               form_class=ModelSearchForm,
+                               searchqueryset=SearchQuerySet().all()), name="search"),
 )
