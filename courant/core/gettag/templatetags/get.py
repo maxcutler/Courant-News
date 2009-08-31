@@ -5,6 +5,7 @@ from django.db.models.loading import get_model
 from django.db.models.fields.related import ManyToManyRel
 from django.db.models import Count
 from django.db.models.query import QuerySet
+from django.db.models.manager import Manager
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_unicode
 from django.contrib.contenttypes.models import ContentType
@@ -55,12 +56,13 @@ class GetNode(Node):
       model_name = model.__name__.lower()
       
       # Base queryset to filter on
+      manager = model.live if hasattr(model, 'live') and isinstance(model.live, Manager) else model.objects
       opts = gettag.from_model(model)
       if opts.get('is_dynamic', False) and self.params['app_model'] not in opts.get('non_dynamic_names', ''):
          dType = DynamicType.objects.get(pk=gettag.from_model(model).get('dynamic_map').get(self.params['app_model'], None))
-         q = model.objects.filter(dynamic_type=dType)
+         q = manager.filter(dynamic_type=dType)
       else:
-         q = model.objects.all()
+         q = manager.all()
       
       # flag to mark if a value was set before reaching the end of the render
       # function because of a special case
