@@ -47,6 +47,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'courant.core.pages.middleware.TemplatePagesMiddleware',
     'courant.core.maintenancemode.middleware.MaintenanceModeMiddleware',
+    'courant.core.utils.middlewareUserBasedExceptionMiddleware',
     'pagination.middleware.PaginationMiddleware',
 )
 
