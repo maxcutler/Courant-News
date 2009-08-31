@@ -1,6 +1,6 @@
 from haystack import indexes
 from haystack import site
-from models import *
+from models import Article
 
 class ArticleIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -9,6 +9,9 @@ class ArticleIndex(indexes.SearchIndex):
     published_at = indexes.DateTimeField(model_attr='published_at')
     
     #rendered = indexes.CharField(use_template=True, indexed=False)
+    
+    def get_queryset(self):
+        Article.live.all()
     
     def get_updated_field(self):
         return 'modified_at'
