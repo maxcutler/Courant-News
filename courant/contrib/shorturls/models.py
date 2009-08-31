@@ -16,7 +16,7 @@ class ShorturlMedium(models.Model):
     For example, Twitter, email, print, etc.
     """
     name = models.CharField(max_length="255")
-    random_code = models.PositiveIntegerField(unique=True)
+    random_code = models.PositiveIntegerField(unique=True, blank=True)
     
     def __unicode__(self):
         return self.name
