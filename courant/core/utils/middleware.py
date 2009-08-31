@@ -4,6 +4,10 @@ from django import http
 from django.utils.http import urlquote
 import re
 
+from django.views.debug import technical_500_response
+import sys
+
+
 class FileExtensionMiddleware(object):
 
     def _string_in_list(self, list, string):
@@ -59,3 +63,8 @@ def _is_valid_path(path):
         return True
     except urlresolvers.Resolver404:
         return False
+    
+class UserBasedExceptionMiddleware(object):
+    def process_exception(self, request, exception):
+        if request.user.is_superuser:
+            return technical_500_response(request, *sys.exc_info())
