@@ -3,9 +3,9 @@ from courant.core.utils import render
 
 from haystack.forms import ModelSearchForm
 from haystack.query import SearchQuerySet
-from haystack.views import FacetedSearchView
+from haystack.views import SearchView
 
-class CourantSearchView(FacetedSearchView):
+class CourantSearchView(SearchView):
     
     def get_results(self):
         r = super(CourantSearchView, self).get_results()
