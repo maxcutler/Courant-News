@@ -233,9 +233,6 @@ class AkismetContactForm(ContactForm):
 
 class CourantContactForm(AkismetContactForm):
     to = forms.ChoiceField(settings.CONTACT_FORM_CONTACTS, widget=forms.RadioSelect())
-    
-    def from_email(self):
-        return self.cleaned_data['email']
 
     def save(self, fail_silently=False):
         self.recipient_list = self.cleaned_data['to'].split(';')
