@@ -11,7 +11,7 @@ class ArticleIndex(indexes.SearchIndex):
     #rendered = indexes.CharField(use_template=True, indexed=False)
     
     def get_queryset(self):
-        Article.live.all()
+        return Article.live.all()
     
     def get_updated_field(self):
         return 'modified_at'
