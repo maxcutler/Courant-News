@@ -25,7 +25,7 @@ def article_detailed(request, section=None, slug=None, year=None, month=None, da
 
 def homepage(request):
     try:
-        issue = Issue.objects.latest('published_at')
+        issue = Issue.objects.filter(published=True).latest('published_at')
         return render(request, ['homepage/%s' % issue.display_type.template_name, 'homepage/default'], {'issue': issue})
     except Issue.DoesNotExist:
         return render(request, ['homepage/default'])
