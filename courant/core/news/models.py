@@ -265,6 +265,9 @@ class Article(DynamicModelBase):
     def save(self, **kwargs):
         self.body_html = self.body
         super(Article, self).save(**kwargs)
+        
+    def ordered_media(self):
+        return ArticleMedia.objects.filter(article=self).order_by('order')
 
     @models.permalink
     def get_absolute_url(self):
@@ -307,3 +310,6 @@ class ArticleMedia(ContentMedia):
     this media item among all media items associated with the article.
     """
     article = models.ForeignKey(Article)
+    
+    class Meta:
+        ordering = ['order']
