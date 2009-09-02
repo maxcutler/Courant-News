@@ -30,7 +30,7 @@ class MediaAdmin(admin.ModelAdmin):
             'fields': ('tags',)
         }),
         ("Advanced", {
-            'fields': ('slug','comment_options'),
+            'fields': ('slug','comment_options', 'staffers_override', 'status_line_override'),
             'classes': ('collapse',)
         }),
     )

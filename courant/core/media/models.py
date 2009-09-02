@@ -158,6 +158,7 @@ class ContentMedia(models.Model):
     
     class Meta:
         abstract = True
+        ordering = ['order']
     
 class Photo(MediaItem):
     """

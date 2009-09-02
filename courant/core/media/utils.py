@@ -8,7 +8,7 @@ def get_image_path(instance, filename):
 def get_file_path(instance, filename):
     return get_storage_path(instance, filename, 'files')
 
-def get_storage_path(instance, filename, prefix):
+def get_storage_path(instance, filename, prefix=settings.UPLOADED_MEDIA_DIR):
     if instance.published_at:
         dt = instance.published_at
     else:
