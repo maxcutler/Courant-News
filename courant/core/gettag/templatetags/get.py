@@ -105,7 +105,9 @@ class GetNode(Node):
                   value = Variable(self.params['with_value']).resolve(context)
                except VariableDoesNotExist:
                   value = self.params['with_value']
-                  
+                  if value == 'None':
+                     value = None
+
                filter_params[str(field)] = value
             else:
                # only return results that have matching related objects
