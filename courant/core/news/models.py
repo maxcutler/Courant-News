@@ -261,6 +261,10 @@ class Article(DynamicModelBase):
 
     def __unicode__(self):
         return self.heading
+    
+    def save(self, **kwargs):
+        self.body_html = self.body
+        super(Article, self).save(**kwargs)
 
     @models.permalink
     def get_absolute_url(self):
