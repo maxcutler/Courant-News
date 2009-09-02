@@ -81,6 +81,9 @@ class Issue(DynamicModelBase):
     def __unicode__(self):
         return self.name
     
+    def ordered_articles(self):
+        return [x.article for x in IssueArticle.objects.filter(issue=self, article__section__full_path__startswith='news').order_by('order')]
+    
     @models.permalink
     def get_absolute_url(self):
         return('issue_archive', (), {
