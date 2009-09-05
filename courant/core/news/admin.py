@@ -96,7 +96,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Basics", {
-            'fields': ('section', 'display_type', 'status', 'published_at')
+            'fields': ('dynamic_type', 'section', 'display_type', 'status', 'published_at')
         }),
         ("Article Contents", {
             'fields': ('heading', 'subheading', 'summary', 'body')
