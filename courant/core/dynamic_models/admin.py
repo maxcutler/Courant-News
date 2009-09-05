@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.contenttypes import generic
 from courant.core.dynamic_models.models import *
 from courant.core.dynamic_models.forms import *
 
@@ -16,3 +17,7 @@ class DynamicTypeAdmin(admin.ModelAdmin):
     
     inlines = [DynamicTypeFieldAdmin]
 admin.site.register(DynamicType, DynamicTypeAdmin)
+
+class AttributeInline(generic.GenericTabularInline):
+    model = Attribute
+    extra = 0

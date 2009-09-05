@@ -1,5 +1,8 @@
 from django.contrib import admin
 from courant.core.news.models import *
+
+from courant.core.dynamic_models.admin import AttributeInline
+
 import notifications
 
 class IssueArticleInline(admin.TabularInline):
@@ -82,7 +85,7 @@ class ArticleIssueInline(admin.TabularInline):
     model = IssueArticle
     raw_id_fields = ('issue',)
     extra = 1
-    
+
 
 class ArticleAdmin(admin.ModelAdmin):
     date_hierarchy = 'published_at'
@@ -111,6 +114,7 @@ class ArticleAdmin(admin.ModelAdmin):
         ArticleBylineInline,
         ArticleMediaInline,
         ArticleIssueInline,
+        AttributeInline,
     ]
     
     actions = ('send_email_update', )

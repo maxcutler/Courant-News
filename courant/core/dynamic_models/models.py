@@ -36,8 +36,8 @@ class DynamicTypeField(models.Model):
     # be sure to specify default values
     TYPE_FIELDS = {
         'varchar': models.CharField(max_length=255, blank=True, null=True, default=None),
-        'text': models.TextField(null=True, default=None),
-        'int': models.IntegerField(null=True, default=None),
+        'text': models.TextField(blank=True, null=True, default=None),
+        'int': models.IntegerField(blank=True, null=True, default=None),
         'bool': models.BooleanField(default=False),
     }
     
