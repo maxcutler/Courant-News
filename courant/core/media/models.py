@@ -267,3 +267,31 @@ class GalleryMedia(ContentMedia):
     Associates media items to galleries in a specified order.
     """
     gallery = models.ForeignKey(Gallery, related_name='gallery_media')
+    
+class File(MediaItem):
+    """
+    Media item representing a file.
+    """
+    file = models.FileField(_('file'), upload_to=get_file_path)
+    image = models.ImageField("Thumbnail", upload_to=get_storage_path, blank=True,
+                              help_text="Leave blank to generate automatically.")
+    
+    width = models.PositiveIntegerField(blank=True, null=True, help_text="Only required for certain file types (e.g., SWF)")
+    height = models.PositiveIntegerField(blank=True, null=True, help_text="Only required for certain file types (e.g., SWF)")
+    
+    objects = SubclassManager()
+    
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "-created_at"
+        
+    def thumbnail(self):
+        return self.image if self.image else self.file
+    
+    def extension(self):
+        """
+        Returns file extension without leading dot (e.g., 'pdf', 'swf')
+        """
+        basename, extension = os.path.splitext(self.file.name)
+        return extension[1:]
+gettag.register(File)

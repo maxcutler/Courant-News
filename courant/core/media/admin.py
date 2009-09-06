@@ -110,3 +110,22 @@ class GalleryAdmin(MediaAdmin):
         GalleryMediaInline
     ]
 admin.site.register(Gallery, GalleryAdmin)
+
+class FileAdmin(MediaAdmin):
+    list_filter = ['created_at']
+    fieldsets = (
+        ("Basics", {
+            'fields': ('name','caption', 'folder', 'published_at')
+        }),
+        ("File", {
+            'fields': ('file','image','width','height') 
+        }),
+        ("Tags", {
+            'fields': ('tags',)
+        }),
+        ("Advanced", {
+            'fields': ('slug','comment_options'),
+            'classes': ('collapse',)
+        }),
+    )
+admin.site.register(File, FileAdmin)
