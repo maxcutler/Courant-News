@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from djangosphinx.manager import SphinxSearch
 
-from courant.core.search import search
+from courant.core.gettag import gettag
 
 class Staffer(models.Model):
     """
@@ -18,8 +17,8 @@ class Staffer(models.Model):
     # staffer's name if they do not have a user account
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-
-    search = SphinxSearch('staffers')
+    
+    public_profile = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['user']
@@ -37,9 +36,7 @@ class Staffer(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return('staffer_detailed', (), {'slug': self.slug})
-search.register(Staffer,
-                fields=('first_name', 'last_name', 'position'),
-                date_field=None)
+gettag.register(Staffer)
 
 class ContentByline(models.Model):
     """
