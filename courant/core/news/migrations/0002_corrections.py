@@ -8,14 +8,14 @@ class Migration:
     def forwards(self, orm):
         
         # Adding field 'Article.correction_for'
-        db.add_column('news_article', 'correction_for', models.ForeignKey(orm.Article, related_name='corrected', null=True, blank=True))
+        db.add_column('news_article', 'correction', models.ForeignKey(orm.Article, related_name='corrected', null=True, blank=True))
         
     
     
     def backwards(self, orm):
         
         # Deleting field 'Article.correction_for'
-        db.delete_column('news_article', 'correction_for_id')
+        db.delete_column('news_article', 'correction_id')
         
     
     
@@ -70,7 +70,7 @@ class Migration:
             'comment_options': ('models.ForeignKey', ["orm['discussions.CommentOptions']"], {'null': 'True'}),
             'content_modified_at': ('ModificationDateTimeField', [], {}),
             'content_type': ('models.ForeignKey', ["orm['contenttypes.ContentType']"], {'null': 'True', 'editable': 'False'}),
-            'correction_for': ('models.ForeignKey', ["orm['news.Article']"], {'related_name': "'corrected'", 'null': 'True', 'blank': 'True'}),
+            'correction': ('models.ForeignKey', ["orm['news.Article']"], {'related_name': "'corrected'", 'null': 'True', 'blank': 'True'}),
             'created_at': ('CreationDateTimeField', [], {}),
             'display_type': ('models.ForeignKey', ["orm['news.ArticleDisplayType']"], {'related_name': '"articles"'}),
             'dynamic_type': ('models.ForeignKey', ["orm['dynamic_models.DynamicType']"], {'default': 'None', 'null': 'True'}),
