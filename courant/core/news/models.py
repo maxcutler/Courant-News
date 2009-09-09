@@ -236,6 +236,8 @@ class Article(DynamicModelBase):
     body_html = models.TextField(editable=False)
 
     slug = models.SlugField(unique=True)
+    
+    correction_for = models.ForeignKey('self', related_name='corrected', null=True, blank=True)
 
     published_at = models.DateTimeField()
     content_modified_at = ModificationDateTimeField()

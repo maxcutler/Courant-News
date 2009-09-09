@@ -93,6 +93,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter = ['published_at', 'status', 'display_type', 'section','dynamic_type']
     search_fields = ['heading']
     prepopulated_fields = {'slug': ('heading',)}
+    raw_id_fields = ['correction_for']
 
     fieldsets = (
         ("Basics", {
@@ -105,7 +106,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'fields': ('tags',)
         }),
         ("Advanced", {
-            'fields': ('slug', 'comment_options'),
+            'fields': ('slug', 'comment_options', 'correction_for'),
             'classes': ('collapse',)
         }),
     )
