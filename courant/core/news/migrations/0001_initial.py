@@ -104,7 +104,7 @@ class Migration:
             ('modified_at', ModificationDateTimeField()),
             ('tags', TagField()),
             ('content_type', models.ForeignKey(orm['contenttypes.ContentType'], null=True, editable=False)),
-            ('comment_options', models.ForeignKey(orm['discussions.CommentOptions'], default=default_comment_option, null=True)),
+            ('comment_options', models.ForeignKey(orm['discussions.CommentOptions'], null=True)),
         ))
         db.send_create_signal('news', ['Article'])
         
@@ -195,7 +195,7 @@ class Migration:
             'authors': ('models.ManyToManyField', ["orm['staff.Staffer']"], {'related_name': "'articles'", 'through': "'ArticleByline'"}),
             'body': ('models.TextField', [], {}),
             'body_html': ('models.TextField', [], {'editable': 'False'}),
-            'comment_options': ('models.ForeignKey', ["orm['discussions.CommentOptions']"], {'default': 'default_comment_option', 'null': 'True'}),
+            'comment_options': ('models.ForeignKey', ["orm['discussions.CommentOptions']"], {'null': 'True'}),
             'content_modified_at': ('ModificationDateTimeField', [], {}),
             'content_type': ('models.ForeignKey', ["orm['contenttypes.ContentType']"], {'null': 'True', 'editable': 'False'}),
             'created_at': ('CreationDateTimeField', [], {}),
