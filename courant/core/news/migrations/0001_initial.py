@@ -5,6 +5,10 @@ from courant.core.news.models import *
 
 class Migration:
     
+    depends_on = (
+        ("discussions", "0002_initial"),
+    )
+    
     def forwards(self, orm):
         
         # Adding model 'Section'
