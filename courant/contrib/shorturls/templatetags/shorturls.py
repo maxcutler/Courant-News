@@ -1,4 +1,5 @@
 from django.template import Library, Template, TemplateSyntaxError, Node, Variable
+from django.contrib.contenttypes.models import ContentType
 from courant.contrib.shorturls.models import ShorturlMedium, Shorturl
 
 register = Library()
@@ -16,7 +17,7 @@ class ShorturlNode(Node):
                                                                defaults={'name':self.medium})
         
         shorturl, created = Shorturl.objects.get_or_create(medium=medium,
-                                                           content_type=obj.content_type,
+                                                           content_type=ContentType.objects.get_for_model(obj),
                                                            object_id=obj.pk)
         
         if self.varname:
