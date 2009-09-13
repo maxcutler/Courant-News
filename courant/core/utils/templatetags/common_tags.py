@@ -98,7 +98,7 @@ class DefaultNode(Node):
       self.value = value
       
    def render(self, context):
-      if not self.varname in context:
+      if not self.varname in context or (not isinstance(context[self.varname], bool) and not context[self.varname]):
          context[self.varname] = parse_string_variable(self.value, context)
       return ''
    
