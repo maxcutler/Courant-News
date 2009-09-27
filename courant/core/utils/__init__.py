@@ -3,6 +3,7 @@ from django.template.context import RequestContext
 from django.template import add_to_builtins
 from django.db.models.signals import pre_init
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from courant.core.gettag import gettag
 from tagging.models import Tag, TaggedItem
