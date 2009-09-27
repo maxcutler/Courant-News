@@ -8,12 +8,13 @@ class MemcachedMiddleware:
     # based on http://soyrex.com/blog/django-nginx-and-memcached/
 
     def process_response(self, request, response):
-        if not isinstance(response, http.HttpResponsePermanentRedirect):
+        try:
+          if not isinstance(response, http.HttpResponsePermanentRedirect):
             cacheIt = True
             theUrl = request.get_full_path()
 
             # if it's a GET then store it in the cache:
-            if request.method != 'GET' or request.user.is_authenticated():
+            if request.method != 'GET' or not request.user.is_anonymous():
                 cacheIt = False
 
             # loop on our CACHE_INGORE_REGEXPS and ignore
@@ -24,7 +25,7 @@ class MemcachedMiddleware:
 
             if cacheIt:
                 key = '%s-%s' % (settings.CACHE_KEY_PREFIX, theUrl)
-                cache.set(key, response.content)
+                cache.set(key, response.content, 3600)
 
             # delete any sessionid remnants for non-authenticated users
             # django leaves an invalid sessionid cookie after logout, which
@@ -34,5 +35,6 @@ class MemcachedMiddleware:
                 len(request.COOKIES['sessionid']):
 
                 response.delete_cookie('sessionid')
-
+        except:
+          pass
         return response

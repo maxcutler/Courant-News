@@ -14,7 +14,7 @@ class ShortUrlMiddleware(object):
     the HTTP 404 will continue to bubble up.
     """
     def process_response(self, request, response):
-        if response.status_code == 404 and request.path.startswith(settings.SHORTURLS_PREFIX):
+        if response.status_code in [404, 500] and request.path.startswith(settings.SHORTURLS_PREFIX):
             try:
                 path = request.path[len(settings.SHORTURLS_PREFIX):].strip('/')
                 url = get_object_or_404(Shorturl, url__exact=path)

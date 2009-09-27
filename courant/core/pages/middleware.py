@@ -8,7 +8,7 @@ class TemplatePagesMiddleware(object):
     #Heavily adapted from the Django flatpage middleware - http://code.djangoproject.com/browser/django/trunk/django/contrib/flatpages/middleware.py
 
     def process_response(self, request, response):
-        if response.status_code != 404:
+        if response.status_code not in [404,500]:
             return response # No need to check for a flatpage for non-404 responses.
 
         # Try and render the page
