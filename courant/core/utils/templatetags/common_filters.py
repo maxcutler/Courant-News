@@ -1,6 +1,11 @@
 from django.template import Library
+from django.contrib.contenttypes.models import ContentType
 
 register = Library()
+
+@register.filter
+def contenttype(obj):
+    return ContentType.objects.get_for_model(obj)
 
 # truncatesmart from http://www.djangosnippets.org/snippets/1259/
 @register.filter
