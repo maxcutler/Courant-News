@@ -84,8 +84,7 @@ class Shorturl(models.Model):
         super(Shorturl, self).save(**kwargs)
  
     def get_shortcut(self):
-        return ''.join([settings.SHORTURLS_DOMAIN or Site.objects.get_current().domain,
-                        settings.SHORTURLS_PREFIX,
+        return ''.join([settings.SHORTURLS_DOMAIN or (Site.objects.get_current().domain+settings.SHORTURLS_PREFIX),
                         self.url])
         
 class ShorturlHit(models.Model):
