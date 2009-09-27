@@ -6,7 +6,6 @@ import re
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import Context, RequestContext, loader
@@ -14,6 +13,7 @@ from django.template import Context, RequestContext, loader
 from courant.core.emailthis.forms import EmailEventForm
 from courant.core.emailthis.models import EmailEvent, email_sent
 from courant.core.emailthis.util import render_to_json, get_subject, clean_errors
+from courant.core.mailer import send_mail
 
 def get_email_form(request, content_type_id, object_id):
     """
@@ -84,7 +84,7 @@ def process_email_form(request, content_type_id=None, object_id=None):
     
     recipients=cleaned['email_to'].split(',')
     from_address=cleaned['email_from']
-    send_mail(cleaned['subject'], message, from_address, recipients, fail_silently=False)
+    send_mail(cleaned['subject'], message, from_address, recipients, fail_silently=False, priority='high')
     
     #Update email_count
     email_sent.send(sender=EmailEvent, instance=item)
@@ -95,7 +95,7 @@ def process_email_form(request, content_type_id=None, object_id=None):
     event.object_id=item.pk
     event.mailed_by=user
     event.save()
-    return HttpResponse("OK", mimetype="text/plain")
+    return render_to_response("email_success.txt")
 
 try:
     from djangologging.decorators import suppress_logging_output
