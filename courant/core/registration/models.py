@@ -111,7 +111,7 @@ class RegistrationManager(models.Manager):
             profile_callback(user=new_user)
         
         if send_email:
-            from django.core.mail import send_mail
+            from courant.core.mailer import send_mail
             current_site = Site.objects.get_current()
             
             subject = render_to_string('registration/activation_email_subject.txt',
