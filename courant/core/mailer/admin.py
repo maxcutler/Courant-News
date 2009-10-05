@@ -15,6 +15,9 @@ class DontSendEntryAdmin(admin.ModelAdmin):
 
 class MessageLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'to_address', 'subject', 'when_attempted', 'result')
+    list_filter = ('result',)
+    search_fields = ('to_address',)
+    ordering = ('-when_attempted',)
 
 admin.site.register(MessageJob, MessageJobAdmin)
 admin.site.register(Message, MessageAdmin)
