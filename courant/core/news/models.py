@@ -69,7 +69,7 @@ class Issue(DynamicModelBase):
     articles = models.ManyToManyField('Article', through='IssueArticle',
                                       related_name='issues')
     
-    lead_media = models.ForeignKey(MediaItem, related_name='issues', null=True)
+    lead_media = models.ForeignKey(MediaItem, related_name='issues', blank=True, null=True)
 
     published_at = models.DateTimeField()
     created_at = CreationDateTimeField()
