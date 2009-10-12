@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.template import VariableDoesNotExist
 
 import tagging
+import datetime
 from tagging.fields import TagField
 
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
@@ -95,7 +96,9 @@ class Issue(DynamicModelBase):
             Article.objects.filter(issues=self).update(status=published_status)
     
     def ordered_articles(self):
-        return [x.article for x in IssueArticle.objects.filter(issue=self, article__status__published=True).order_by('order')]
+        return [x.article for x in IssueArticle.objects.filter(issue=self,
+                                                               article__status__published=True,
+                                                               article__published_at__lte=datetime.datetime.now()).order_by('order')]
     
     @models.permalink
     def get_absolute_url(self):
@@ -227,7 +230,8 @@ class ArticleManager(models.Manager):
 class LiveArticleManager(models.Manager):
 
     def get_query_set(self):
-        return super(LiveArticleManager, self).get_query_set().filter(status__published=True)
+        return super(LiveArticleManager, self).get_query_set().filter(status__published=True,
+                                                                      published_at__lte=datetime.datetime.now())
 
 
 class Article(DynamicModelBase):
