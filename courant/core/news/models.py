@@ -81,8 +81,21 @@ class Issue(DynamicModelBase):
     def __unicode__(self):
         return self.name
     
+    def save(self, *args, **kwargs):
+        publish_children_articles = False
+        if self.id:
+            old_issue = Issue.objects.get(id=self.id)
+            if not old_issue.published and self.published:
+                publish_children_articles = True
+                
+        super(Issue, self).save(*args, **kwargs)
+        
+        if publish_children_articles:
+            published_status = ArticleStatus.objects.filter(published=True)[0]
+            Article.objects.filter(issues=self).update(status=published_status)
+    
     def ordered_articles(self):
-        return [x.article for x in IssueArticle.objects.filter(issue=self).order_by('order')]
+        return [x.article for x in IssueArticle.objects.filter(issue=self, article__status__published=True).order_by('order')]
     
     @models.permalink
     def get_absolute_url(self):
