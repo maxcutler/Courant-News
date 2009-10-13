@@ -77,7 +77,7 @@ class Issue(DynamicModelBase):
 
     class Meta:
         ordering = ['-published_at']
-        get_latest_by = '-published_at'
+        get_latest_by = 'published_at'
 
     def __unicode__(self):
         return self.name
