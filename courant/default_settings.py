@@ -127,3 +127,5 @@ TEMPLATE_TAGS = ('courant.core.utils.templatetags.common_tags',
                  'courant.core.utils.templatetags.common_filters',
                  'courant.core.gettag.templatetags.get',
                  'courant.core.caching.templatetags.smart_cache')
+
+DISPLAY_TYPE_TEMPLATE_FALLBACK = 'default'

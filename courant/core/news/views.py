@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.flatpages.views import flatpage
+from django.conf import settings
 
 from datetime import datetime
 
@@ -20,7 +21,7 @@ def article_detailed(request, section=None, slug=None, year=None, month=None, da
     if not request.user.is_superuser:
         kwargs['status__published'] = True
     article = Article.objects.get(**kwargs)
-    return render(request, [template, 'articles/%s/%s' % (article.section.path, article.display_type.template_name), 'articles/%s' % article.display_type.template_name], {'article': article})
+    return render(request, [template, 'articles/%s/%s' % (article.section.path, article.display_type.template_name), 'articles/%s' % article.display_type.template_name, 'articles/%s' % settings.DISPLAY_TYPE_TEMPLATE_FALLBACK], {'article': article})
 
 
 def homepage(request):
