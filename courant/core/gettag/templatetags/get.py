@@ -52,14 +52,17 @@ class GetNode(Node):
       
    def render(self, context):
       # determine desired object type
-      model = model_from_name(self.params['app_model'])
+      try:
+         model = model_from_name(self.params['app_model'])
+      except TemplateSyntaxError:
+         model = model_from_name(Variable(self.params['app_model']).resolve(context))
       model_name = model.__name__.lower()
       
       # Base queryset to filter on
       manager = model.live if hasattr(model, 'live') and isinstance(model.live, Manager) else model.objects
       opts = gettag.from_model(model)
-      if opts.get('is_dynamic', False) and self.params['app_model'] not in opts.get('non_dynamic_names', ''):
-         dType = DynamicType.objects.get(pk=gettag.from_model(model).get('dynamic_map').get(self.params['app_model'], None))
+      if opts.get('is_dynamic', False) and model_name not in opts.get('non_dynamic_names', ''):
+         dType = DynamicType.objects.get(pk=gettag.from_model(model).get('dynamic_map').get(model_name, None))
          q = manager.filter(dynamic_type=dType)
       else:
          q = manager.all()
