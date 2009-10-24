@@ -16,11 +16,12 @@ class SearchFacetCheck(Node):
         facet_type = unicode(Variable(self.facet).resolve(context))
         value = unicode(Variable(self.value).resolve(context))
         for facet in facets:
-            name, id = facet.split(':')
-            if name == facet_type and id == value:
-                found = True
-                break
-        context[self.varname] = found
+            if len(facet) > 0:
+                name, id = facet.split(':')
+                if name == facet_type and id == value:
+                    found = True
+                    break
+            context[self.varname] = found
         return ''
     
 def do_search_facet_check(parser, token):
