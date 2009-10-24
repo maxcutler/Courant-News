@@ -79,7 +79,6 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'south',
     'pagination',
-    'djangosphinx',
     'django_extensions',
     'haystack',
     'chronograph',

@@ -5,12 +5,10 @@ from django.forms.fields import DateField, TimeField
 
 from courant.core.utils.forms.widgets import SplitSelectDateTimeWidget, SelectTimeWidget
 from courant.core.gettag import gettag
-from courant.core.search import search
 from courant.core.dynamic_models.models import DynamicModelBase
 
 from tagging.fields import TagField
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
-from djangosphinx.manager import SphinxSearch
 
 import datetime
 
@@ -49,8 +47,6 @@ class Event(DynamicModelBase):
     created_at = CreationDateTimeField()
     modified_at = ModificationDateTimeField()
 
-    search = SphinxSearch('events')
-
     class Meta:
         ordering = ['-date', 'start_time']
         get_latest_by = 'date'
@@ -73,10 +69,6 @@ class Event(DynamicModelBase):
         """
         return datetime.datetime.combine(self.date, self.start_time)
 gettag.register(Event)
-search.register(Event,
-                fields=('name', 'summary'),
-                filter_fields=('event_type','verified','event_type','submitted_by'),
-                date_field='date')
 
 class EventForm(ModelForm):
     date = DateField(widget=SplitSelectDateTimeWidget(twelve_hr=True))

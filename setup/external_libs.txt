@@ -2,7 +2,6 @@
 -e svn+http://django-tagging.googlecode.com/svn/trunk#egg=tagging
 -e svn+http://django-command-extensions.googlecode.com/svn/trunk/#egg=django_extensions
 -e svn+http://svn.aeracode.org/svn/south/trunk#egg=south
--e svn+http://django-sphinx.googlecode.com/svn/trunk/#egg=djangosphinx
 -e svn+http://django-mptt.googlecode.com/svn/trunk#egg=mptt
 -e svn+http://django-pagination.googlecode.com/svn/trunk#egg=pagination
 #-e hg+http://sorl-thumbnail.googlecode.com/hg/#egg=sorl

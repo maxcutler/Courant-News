@@ -14,14 +14,11 @@ from django_extensions.db.fields import CreationDateTimeField, ModificationDateT
 
 from comment_utils.moderation import moderator
 
-from djangosphinx.manager import SphinxSearch
-
 from courant.core.staff.models import Staffer, ContentByline
 from courant.core.media.models import MediaItem, ContentMedia
 from courant.core.discussions.models import CommentOptions, DefaultCommentOption
 from courant.core.utils.managers import SubclassManager
 from courant.core.gettag import gettag
-from courant.core.search import search
 from courant.core.discussions.moderation import CourantModerator
 from courant.core.dynamic_models.models import DynamicModelBase
 
@@ -275,7 +272,6 @@ class Article(DynamicModelBase):
 
     objects = ArticleManager()
     live = LiveArticleManager()
-    search = SphinxSearch('articles_main articles_delta')
 
     class Meta:
         ordering = ["-published_at", "issuearticle__order"]
@@ -312,11 +308,6 @@ class Article(DynamicModelBase):
         })
 moderator.register(Article, CourantModerator)
 gettag.register(Article, name_field='heading')
-search.register(Article,
-                fields=('heading', 'subheading', 'summary', 'body'),
-                filter_fields=('section', 'display_type','status'),
-                date_field='published_at',
-                use_delta=True)
 
 class ArticleByline(ContentByline):
     """
