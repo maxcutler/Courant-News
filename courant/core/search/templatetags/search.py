@@ -21,7 +21,7 @@ class SearchFacetCheck(Node):
                 if name == facet_type and id == value:
                     found = True
                     break
-            context[self.varname] = found
+        context[self.varname] = found
         return ''
     
 def do_search_facet_check(parser, token):
