@@ -251,7 +251,7 @@ class Gallery(MediaItem):
             pass
     
     class Meta:
-        verbose_name_plural = 'Galleries'
+        verbose_name_plural = 'galleries'
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
         
