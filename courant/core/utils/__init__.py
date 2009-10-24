@@ -34,3 +34,6 @@ pre_init.connect(add_type)
 gettag.register(Tag, name_field='tag__name',
                 with_func=Tag.objects.usage_for_queryset,
                 in_func=TaggedItem.objects.get_by_model)
+
+# register ContentType with gettag
+gettag.register(ContentType, name_field='model')
