@@ -1,41 +1,50 @@
-from courant.core.search.forms import SearchForm
+from courant.core.search.forms import CourantSearchForm
 from courant.core.utils import render
 
-from haystack.forms import ModelSearchForm
 from haystack.query import SearchQuerySet
-from haystack.views import SearchView
+from haystack.views import FacetedSearchView
 
-class CourantSearchView(SearchView):
-    
+class CourantSearchView(FacetedSearchView):
+    def __call__(self, request):
+        self.request = request
+        
+        self.date_sort = (request.GET.get('order', '') == 'date')
+        
+        self.form = self.build_form()
+        self.query = self.get_query()
+        self.results = self.get_results()
+        
+        return self.create_response()
+        
     def get_results(self):
-        r = super(CourantSearchView, self).get_results()
-        if isinstance(r, SearchQuerySet):
-            return r.load_all()
-        return r
+        if self.query:
+            if self.date_sort:
+                return self.form.search().order_by('-published_at')
+            return self.form.search()
+        
+        return []
     
-    def build_page(self):
-        return (None, self.results)
-
-#import copy
-#def search(request):
-#    results = {}
-#    params = request.GET.copy() #Since request.GET is immutable, we need to create a copy to manipulate
-#    
-#    params.setlistdefault('indexes', ['articles',]) #Make sure at least articles is checked
-#    indexes = copy.deepcopy(params.getlist('indexes')) #deepcopy so articles_delta isn't injected into params, messing up the form
-#    if 'articles' in indexes:
-#        indexes.append('articles_delta')
-#    indexes = str(' '.join(indexes)) #Sphinx wants a string, not a unicode
-#    
-#    form = SearchForm(params)
-#    
-#    if request.GET['q']:
-#        if form.is_valid():
-#            results = SphinxQuerySet(index=indexes).query(form.cleaned_data['q']).set_options(mode=SPH_MATCH_EXTENDED)
-#            if form.cleaned_data['end_date']:
-#                results = results.filter(date__lte=form.cleaned_data['end_date'])
-#            if form.cleaned_data['start_date']:
-#                results = results.filter(date__gte=form.cleaned_data['start_date'])
-#            if form.cleaned_data['sort_by'] == 'date':
-#                results = results.order_by('-date')
-#    return render(request, ['search/results_page'], {'form': form, 'results':results, 'terms':request.GET['q'] })
+    def extra_context(self):
+        extra = {}
+        
+        if self.query:
+            facets = self.form.search().facet_counts()
+            
+            for field, values in facets['fields'].items():
+                # sort in descending order
+                values.sort(lambda x,y:cmp(y[1],x[1]))
+                
+                # remove any null values or empty facets
+                # e.g., media don't have sections, so section facets show up as null
+                to_remove = []
+                for index, value in enumerate(values):
+                    if value[0] == None or value[1] == 0:
+                        # must delete from end of list towards front, or else indexes will change
+                        to_remove.insert(0, index) 
+                for index in to_remove:
+                    del values[index]
+    
+            extra['facets'] = facets
+            extra['results'] = self.results
+            extra['sort_order'] = 'date' if self.date_sort else 'relevance'
+        return extra

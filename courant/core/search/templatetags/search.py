@@ -1,13 +1,45 @@
 from django.template import Library, Node, Variable
-from courant.core.search.forms import SearchForm
+from courant.core.search.forms import CourantSearchForm
 
 register = Library()
+
+class SearchFacetCheck(Node):
+    def __init__(self, facet, value, varname):
+        self.facet = facet
+        self.value = value
+        self.varname = varname
+        
+    def render(self, context):
+        request = context['request']
+        facets = request.GET.getlist('selected_facets')
+        found = False
+        facet_type = unicode(Variable(self.facet).resolve(context))
+        value = unicode(Variable(self.value).resolve(context))
+        for facet in facets:
+            name, id = facet.split(':')
+            if name == facet_type and id == value:
+                found = True
+                break
+        context[self.varname] = found
+        return ''
+    
+def do_search_facet_check(parser, token):
+    bits = token.contents.split()
+    if not len(bits) == 5:
+        raise TemplateSyntaxError, "search_facet_check syntax error"
+    return SearchFacetCheck(bits[1], bits[2], bits[4])
+do_search_facet_check = register.tag('search_facet_check', do_search_facet_check)
+
+def strip_facet(url, facet, value):
+    to_remove = "&selected_facets=%s:%s" % (facet, value)
+    return url.replace('%3A', ':').replace(to_remove, '')
+register.simple_tag(strip_facet)
 
 class SearchFormNode(Node):
     def __init__(self, varname):
         self.varname = varname
     def render(self, context):
-        context[self.varname] = SearchForm(context['request'].GET)
+        context[self.varname] = CourantSearchForm(context['request'].GET)
         return ''
 
 def get_search_form(parser, token):

@@ -1,12 +1,14 @@
 from django.conf.urls.defaults import *
-from courant.core.search.views import *
 
-from haystack.forms import ModelSearchForm
+import datetime
+
 from haystack.query import SearchQuerySet
-from haystack.views import SearchView
+
+from courant.core.search.views import CourantSearchView
+from courant.core.search.forms import CourantSearchForm
 
 urlpatterns = patterns('',
     url(r'', CourantSearchView(template='search/results_page.html',
-                               form_class=ModelSearchForm,
-                               searchqueryset=SearchQuerySet().all()), name="search"),
+                               form_class=CourantSearchForm,
+                               searchqueryset=SearchQuerySet().facet('section').facet('staffers').facet('type')), name="search"),
 )

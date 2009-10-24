@@ -7,5 +7,17 @@ Search
 .. module:: courant.core.search
     :synopsis: Powerful search of all content types.
     
-Courant News currently builds upon `django-sphinx <http://code.google.com/p/django-sphinx/>`_,
-but plans to switch to `haystack <http://haystacksearch.org/>`_ in the near future.
+Courant News currently builds upon `Haystack <http://haystacksearch.org/>`_
+search library, which allows for use of various search backend options
+depending on your hosting situation and needs.
+
+For example, if you are on shared hosting that does not allow the installation
+of Java or custom C++ programs, you can use the `Whoosh <http://whoosh.ca/>`_
+engine, which is python-only. However, if you can use Java, it is recommended
+that you use the `Solr <http://lucene.apache.org/solr/>`_ backend, which is far
+faster and can handle larger datasets. Read the Haystack documentation
+for more information on choosing a backend.
+
+Courant News makes some assumptions about what information to display on the
+search results page, but if you desire different behavior, simply define
+your own search views, forms, and URLs and include them in your site URLconf.
