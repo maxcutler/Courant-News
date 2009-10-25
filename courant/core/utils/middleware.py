@@ -34,7 +34,7 @@ class FileExtensionMiddleware(object):
         """
         if request.path.rfind('.') > request.path.rfind('/') and not self._string_in_list(settings.FILE_EXTENSION_IGNORE, request.path):
             # Add extension to request object so that it can be accessed in views
-            request.extension = request.path[request.path.rfind('.')+1:]
+            request.extension = [request.path[request.path.rfind('.')+1:],]
 
             # Change path_info so that URL matching occurs properly
             request.path_info = request.path[0:request.path.rfind('.')] + '/'
@@ -48,7 +48,7 @@ class FileExtensionMiddleware(object):
                 if request.GET:
                     newurl += '?' + request.META['QUERY_STRING']
                 return http.HttpResponsePermanentRedirect(newurl)
-            request.extension = 'html'
+            request.extension = ['html',]
 
 def _is_valid_path(path):
     """

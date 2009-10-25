@@ -42,7 +42,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'courant.core.mobile.middleware.MobileMiddleware',
+    'courant.core.headers.middleware.HttpHeadersMiddleware', #new HTTP headers middleware
     'courant.contrib.shorturls.middleware.ShortUrlMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'courant.core.pages.middleware.TemplatePagesMiddleware',
@@ -58,6 +58,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.debug',
     'courant.core.media.context_processors.media',
+    'courant.core.headers.context_processors.headers',
 )
 
 AUTH_PROFILE_MODULE = 'news.userprofile'
@@ -108,6 +109,7 @@ INSTALLED_APPS = (
     'courant.core.pages',
     'courant.core.siteconfig',
     'courant.core.mailer',
+	'courant.core.headers',
 )
 
 # Added for Django Debug Toolbar

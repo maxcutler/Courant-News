@@ -14,9 +14,12 @@ def render(request, *args, **kwargs):
     # add appropriate file extension to template list
     arguments = [arg for arg in args]
     templates = []
-    for template in arguments[0]:
-        if template:
-            templates.append(''.join([template, '.', request.extension]))
+    
+    for extension in request.extension:
+        for template in arguments[0]:
+            if template:
+                templates.append(''.join([template, '.', extension]))
+    
     arguments[0] = templates
 
     return render_to_response(*arguments, **kwargs)
