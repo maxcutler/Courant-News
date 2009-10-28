@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.core.cache import cache
 
 from courant.core.staff.models import Staffer, ContentByline
 from courant.core.discussions.models import CommentOptions, DefaultCommentOption
@@ -87,7 +88,11 @@ class MediaItem(models.Model):
     
     def default_comment_option():
         try:
-            return DefaultCommentOption.objects.get(content_type=ContentType.objects.get_for_model(MediaItem)).options
+            defaults = cache.get('default_mediaitem_comment_options')
+            if not defaults:
+                defaults = DefaultCommentOption.objects.get(content_type=ContentType.objects.get_for_model(MediaItem)).options
+                cache.set('default_mediaitem_comment_options', defaults)
+            return defaults
         except:
             return None
 

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.dispatch import dispatcher
 from django.template.defaultfilters import slugify
 from django.template import VariableDoesNotExist
+from django.core.cache import cache
 
 import tagging
 import datetime
@@ -264,7 +265,11 @@ class Article(DynamicModelBase):
     
     def default_comment_option():
         try:
-            return DefaultCommentOption.objects.get(content_type=ContentType.objects.get_for_model(Article)).options
+            defaults = cache.get('default_article_comment_options')
+            if not defaults:
+                defaults = DefaultCommentOption.objects.get(content_type=ContentType.objects.get_for_model(Article)).options
+                cache.set('default_article_comment_options', defaults)
+            return defaults
         except:
             return None
 

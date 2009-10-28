@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.cache import cache
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -35,5 +36,9 @@ class DefaultCommentOption(models.Model):
 
     def __unicode__(self):
         return self.content_type.name
+    
+    def save(self, **kwargs):
+        super(DefaultCommentOption, self).save(**kwargs)
+        cache.delete('default_%s_comment_options' % self.content_type.model.lower())
 
 gettag.register(Comment, name_field='body')
