@@ -1,5 +1,7 @@
 from django.contrib import admin
-from courant.core.news.models import *
+
+from models import *
+from forms import *
 
 from courant.core.dynamic_models.admin import AttributeInline
 
@@ -94,6 +96,7 @@ class ArticleAdmin(admin.ModelAdmin):
     search_fields = ['heading']
     prepopulated_fields = {'slug': ('heading',)}
     raw_id_fields = ['correction']
+    form = ArticleAdminForm
 
     fieldsets = (
         ("Basics", {
