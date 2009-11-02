@@ -12,12 +12,12 @@ class DynamicType(models.Model):
     DynamicModelBase. Consists of a collection of DynamicTypeFields which
     define the fields that are added to the model.
     """
-    
+
     base = models.ForeignKey(ContentType)
     name = models.CharField(max_length=100)
     name_plural = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100)
-    
+
     def __unicode__(self):
         return self.name
 
@@ -25,14 +25,14 @@ class DynamicTypeField(models.Model):
     """
     A single, dynamically-defined field for customizing a model.
     """
-    
+
     TYPE_CHOICES = (
         (u'varchar', u'Short Text (less than 255 characters)'),
         (u'text', u'Long Text'),
         (u'int', u'Integer'),
         (u'bool', u'Flag (Boolean)'),
     )
-    
+
     # be sure to specify default values
     TYPE_FIELDS = {
         'varchar': models.CharField(max_length=255, blank=True, null=True, default=None),
@@ -40,16 +40,16 @@ class DynamicTypeField(models.Model):
         'int': models.IntegerField(blank=True, null=True, default=None),
         'bool': models.BooleanField(default=False),
     }
-    
+
     dynamic_type = models.ForeignKey(DynamicType)
     name = models.CharField(max_length=100,
                             help_text="Should be all-lowercase with no spaces (use underscores instead of spaces)")
     value_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     column = models.CharField(max_length=20, editable=False)
-    
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, force_insert=False, force_update=False):
         if not self.pk or self.value_type != DynamicTypeField.objects.get(pk=self.pk).value_type:
             # check column usage by finding what columns of this type are
@@ -64,7 +64,7 @@ class DynamicTypeField(models.Model):
             while ("%s%02d" % (self.value_type, i)) in existing_names:
                 i += 1
             cname = "%s%02d" % (self.value_type, i)
-            
+
             if not hasattr(Attribute, cname):
                 field = self.get_field_for_type(self.name, cname, self.value_type)
                 # need to make a new column
@@ -75,11 +75,11 @@ class DynamicTypeField(models.Model):
                     # it stored as a model field because the column isn't actively
                     # used by any of the existing DynamicTypeFields
                     pass
-                
+
                 # add a model field to the Attribute model
                 # this is replicated at server-start using introspection
                 Attribute.add_to_class(cname, field)
-            
+
             # Zero out the column data in case any junk remains
             # from a previous field using this column
             new_values = {cname: Attribute._meta.get_field(cname).default}
@@ -90,7 +90,7 @@ class DynamicTypeField(models.Model):
             self.column = cname
 
         super(DynamicTypeField, self).save(force_insert, force_update)
-    
+
     @staticmethod
     def get_field_for_type(name, column, type):
         field = copy.deepcopy(DynamicTypeField.TYPE_FIELDS[type])
@@ -99,24 +99,24 @@ class DynamicTypeField(models.Model):
         field.column = column
         field.db_column = column
         return field
-    
+
 class Attribute(models.Model):
     """
     Represents the dynamically-defined fields' data for a given model instance.
     Columns are added to this model (and its database table) dynamically as
     required when new DynamicType/DynamicTypeFields are created.
     """
-    
+
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
-    
+
     class Meta:
         unique_together = ('content_type', 'object_id')
-    
+
     def _unicode__(self):
         return u'Attr - CT: %d, ID: %d' % (self.content_type_id, self.object_id)
-        
+
     def __init__(self, *args, **kwargs):
         # Add fields to the Attribute model based on the columns used by dynamic models.
         # Fields added through the admin at runtime will get dynamically added (see
@@ -143,17 +143,17 @@ class DynamicModelBase(models.Model):
     Base class for any model wishing to allow for dynamic customization
     through the admin interface.
     """
-    
-    dynamic_type = models.ForeignKey(DynamicType, null=True, default=None)
-    
+
+    dynamic_type = models.ForeignKey(DynamicType, null=True, blank=True, default=None)
+
     class Meta:
         abstract = True
-        
+
     def save(self, force_insert=False, force_update=False):
         # we need the non-dynamic part of the model to have an ID in the database
         # for the attribute FK, so we need to save that first
         super(DynamicModelBase, self).save(force_insert, force_update)
-        
+
         # check for the existance of dynamic field attributes on the model
         # instance, which means that either one of the fields was accessed or
         # a value was set (without ever getting the value)
@@ -163,9 +163,9 @@ class DynamicModelBase(models.Model):
                                                              object_id=self.pk)
             for dfield in dfields:
                 if hasattr(self, dfield.name):
-                    setattr(attrs, dfield.column, getattr(self, dfield.name))   
+                    setattr(attrs, dfield.column, getattr(self, dfield.name))
             attrs.save()
-        
+
     def __getattr__(self, name):
         # a model attribute was not found, so it could be an attempt to access
         # a dynamic type field. on the first time such a field is accessed,
@@ -174,24 +174,24 @@ class DynamicModelBase(models.Model):
         # simply return the value without processing); the assumption is that
         # if one dynamic field is accessed, it is likely that another dynamic
         # field will be accessed in the lifetime of the model instance.
-        if 'dynamic_type' not in name and self.dynamic_type and not name.startswith('_'):            
+        if 'dynamic_type' not in name and self.dynamic_type and not name.startswith('_'):
             dfields = DynamicTypeField.objects.filter(dynamic_type=self.dynamic_type)
             if name in [field.name for field in dfields]:
-                
+
                 # if this is the first time an Attribute has been created,
                 # then create a dummy one to force the introspection to happen
                 if name not in Attribute._meta.get_all_field_names():
                     Attribute()
-                    
+
                 attrs = Attribute.objects.get(content_type=ContentType.objects.get_for_model(self),
                                               object_id=self.pk)
                 for field in dfields:
                     setattr(self, field.name, getattr(attrs, field.column))
-                    
+
                 # now that all the dynamic fields have been stored on the instance,
                 # we just call getattr again to get the value
                 return getattr(self, name)
-        
+
         # we're ignoring "private" variables that Django checks for (start with
         # underscore), as well as anything else if no dynamic type is set for
         # this model instance
