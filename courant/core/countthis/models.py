@@ -1,5 +1,6 @@
 from django.db import models, IntegrityError
 from django.db.models import F
+from django.db.models.signals import post_save
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -81,3 +82,12 @@ def do_update_count(path, content_type_id, object_id, count_type, update=None):
             # of potential race conditions, we avoid setting the +1 value in the
             # creation step
             rows_affected = Statistic.objects.filter(path=path).update(**update_params)
+
+def update_path(sender, instance, **kwargs):
+    # if an object's URL changes, then a new Statistic object wlil be created
+    # for it when updating a count. therefore, we want to always make sure
+    # the correct path is saved for its corresponding Statistic object
+    # (if one exists) to avoid duplicates (which will break functionality elsewhere)
+    if hasattr(instance, 'get_absolute_url'):
+        Statistic.objects.filter(content_type=ContentType.objects.get_for_model(sender), object_id=instance.pk).update(path=instance.get_absolute_url())
+post_save.connect(update_path)
