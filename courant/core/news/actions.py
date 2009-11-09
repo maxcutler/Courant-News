@@ -5,28 +5,9 @@ from django import template
 
 import notifications
 
-def send_email_update(modeladmin, request, queryset):
+def show_email_confirmation_page(modeladmin, request, queryset, action):
     opts = modeladmin.model._meta
     app_label = opts.app_label
-    template_prefix = opts.object_name.lower()+"s"
-
-    # The user has already confirmed the deletion.
-    # Do the deletion and return a None to display the change list view again.
-    if request.POST.get('post'):
-         for article in queryset:
-            options = {
-                'subject': u'YDN Update: %s' % article.heading,
-                'from_address': 'headlines@yaledailynews.com',
-                'from_name': 'Yale Daily News',
-                'data': article,
-                'text_template': '%s/email.txt' % template_prefix,
-                'html_template': '%s/email.html' % template_prefix,
-            }
-            count = notifications.send_email_update(**options)
-            modeladmin.message_user(request, "Email update submitted. %d emails queued for delivery." % count)
-
-         # Return None to display the change list page again.
-         return None
 
     context = {
         "title": "Are you sure?",
@@ -36,6 +17,7 @@ def send_email_update(modeladmin, request, queryset):
         "root_path": modeladmin.admin_site.root_path,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        'action': action,
     }
 
     # Display the confirmation page
@@ -45,4 +27,46 @@ def send_email_update(modeladmin, request, queryset):
         "admin/send_email_update.html"
     ], context, context_instance=template.RequestContext(request))
 
-send_email_update.short_description = "Send email update"
+def send_article_email_update(modeladmin, request, queryset):
+    # The user has already confirmed the email update.
+    # Queue the emails and return a None to display the change list view again.
+    if request.POST.get('post'):
+         for article in queryset:
+            options = {
+                'subject': u'YDN Update: %s' % article.heading,
+                'from_address': 'headlines@yaledailynews.com',
+                'from_name': 'Yale Daily News',
+                'data': article,
+                'text_template': 'articles/email.txt',
+                'html_template': 'articles/email.html',
+            }
+            count = notifications.send_email_update(**options)
+            modeladmin.message_user(request, "Email update submitted. %d emails queued for delivery." % count)
+
+         # Return None to display the change list page again.
+         return None
+
+    return show_email_confirmation_page(modeladmin, request, queryset, 'send_article_email_update')
+send_article_email_update.short_description = "Send email update"
+
+def send_issue_email_update(modeladmin, request, queryset):
+    # The user has already confirmed the email update.
+    # Queue the emails and return a None to display the change list view again.
+    if request.POST.get('post'):
+         for issue in queryset:
+            options = {
+                'subject': u'YDN Headlines: %s' % (issue.published_at.strftime("%B %d, %Y")),
+                'from_address': 'headlines@yaledailynews.com',
+                'from_name': 'Yale Daily News',
+                'data': issue,
+                'text_template': 'issues/email.txt',
+                'html_template': 'issues/email.html',
+            }
+            count = notifications.send_email_update(**options)
+            modeladmin.message_user(request, "Email update submitted. %d emails queued for delivery." % count)
+
+         # Return None to display the change list page again.
+         return None
+
+    return show_email_confirmation_page(modeladmin, request, queryset, 'send_issue_email_update')
+send_issue_email_update.short_description = "Send email update"

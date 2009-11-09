@@ -5,7 +5,7 @@ from forms import *
 
 from courant.core.dynamic_models.admin import AttributeInline
 
-from actions import *
+from actions import send_article_email_update, send_issue_email_update
 
 class IssueArticleInline(admin.TabularInline):
     model = IssueArticle
@@ -34,7 +34,7 @@ class IssueAdmin(admin.ModelAdmin):
 
     inlines = (IssueArticleInline,)
 
-    actions = (send_email_update, )
+    actions = (send_issue_email_update, )
 admin.site.register(Issue, IssueAdmin)
 
 
@@ -107,7 +107,7 @@ class ArticleAdmin(admin.ModelAdmin):
         AttributeInline,
     ]
 
-    actions = (send_email_update, )
+    actions = (send_article_email_update, )
 admin.site.register(Article, ArticleAdmin)
 
 # Remove the admin section for tagging's TaggedItem model,

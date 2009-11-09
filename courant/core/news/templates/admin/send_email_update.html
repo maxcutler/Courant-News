@@ -17,7 +17,7 @@
 {% for obj in queryset %}
 <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}" />
 {% endfor %}
-<input type="hidden" name="action" value="send_email_update" />
+<input type="hidden" name="action" value="{{ action }}" />
 <input type="hidden" name="post" value="yes" />
 <input type="submit" value="{% trans "Yes, I'm sure" %}" />
 </div>
