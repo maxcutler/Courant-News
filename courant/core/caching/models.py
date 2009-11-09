@@ -6,6 +6,9 @@ from django.contrib.contenttypes import generic
 from django_extensions.db.fields import ModificationDateTimeField
 from django.conf import settings
 
+# number of seconds to wait before fullpage cache is deleted when expiring a template fragment on that page
+FULLPAGE_CACHE_REFRESH = 10
+
 class CachedObject(models.Model):
 	cache_key = models.CharField(max_length=255)
 	url = models.CharField(max_length=255)
@@ -26,12 +29,17 @@ def clear_obj_cache(obj):
 			# mark URL as needing cache clearing
 			urls.append(obj_cache.url)
 
-		# delete caches for all marked URLs
-		# since full-page caches don't use anti-dogpiling, we delete the caches themselves
+		# for full page caches, reset them with a short expiration time.
+		# this should hopefully allow for a non-anonymous user to load
+		# the page and create template fragment caches, so that when the
+		# first anonymous user hits the page, it doesn't have to do much
+		# processing to create a new full-page cache (since the fragments are
+		# all cached), and thus avoid potential dogpiling
 		for url in set(urls):
 			key = "%s-%s" % (settings.CACHE_KEY_PREFIX, url)
-			print "Deleting cache: %s" % key
-			cache.delete(key)
+			fullpage_cache = cache.get(key)
+			if fullpage_cache:
+				cache.set(key, fullpage_cache, FULLPAGE_CACHE_REFRESH)
 	except:
 		pass
 
