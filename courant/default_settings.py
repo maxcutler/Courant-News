@@ -110,6 +110,8 @@ INSTALLED_APPS = (
     'courant.core.siteconfig',
     'courant.core.mailer',
 	'courant.core.headers',
+	
+	'courant.core.nando.lifecycle',
 )
 
 # Added for Django Debug Toolbar
