@@ -4,6 +4,10 @@ from django.db import models
 from courant.core.media.models import *
 
 class Migration:
+
+    depends_on = (
+	    ("discussions", "0002_initial"),
+    )
     
     def forwards(self, orm):
         
@@ -21,7 +25,7 @@ class Migration:
             ('modified_at', ModificationDateTimeField()),
             ('published_at', models.DateTimeField()),
             ('tags', TagField()),
-            ('comment_options', models.ForeignKey(orm['discussions.CommentOptions'], default=default_comment_option, null=True)),
+            ('comment_options', models.ForeignKey(orm['discussions.CommentOptions'], default=None, null=True)),
         ))
         db.send_create_signal('media', ['MediaItem'])
         
@@ -131,7 +135,7 @@ class Migration:
         'media.mediaitem': {
             'Meta': {'ordering': '["-created_at"]', 'get_latest_by': '"-created_at"'},
             'caption': ('models.TextField', [], {}),
-            'comment_options': ('models.ForeignKey', ["orm['discussions.CommentOptions']"], {'default': 'default_comment_option', 'null': 'True'}),
+            'comment_options': ('models.ForeignKey', ["orm['discussions.CommentOptions']"], {'null': 'True'}),
             'content_type': ('models.ForeignKey', ["orm['contenttypes.ContentType']"], {'limit_choices_to': "{'app_label':'media'}", 'null': 'True', 'editable': 'False'}),
             'created_at': ('CreationDateTimeField', [], {}),
             'folder': ('models.ForeignKey', ["orm['media.MediaFolder']"], {}),
