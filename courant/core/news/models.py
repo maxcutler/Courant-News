@@ -22,6 +22,7 @@ from courant.core.utils.managers import SubclassManager
 from courant.core.gettag import gettag
 from courant.core.discussions.moderation import CourantModerator
 from courant.core.dynamic_models.models import DynamicModelBase
+from courant.core.nando.workflow.models import WorkflowMixin
 
 
 class DisplayType(models.Model):
@@ -232,7 +233,7 @@ class LiveArticleManager(models.Manager):
                                                                       published_at__lte=datetime.datetime.now())
 
 
-class Article(DynamicModelBase):
+class Article(DynamicModelBase, WorkflowMixin):
     """
     An article, blog post, or other piece of text-based content.
     """

@@ -112,6 +112,7 @@ INSTALLED_APPS = (
 	'courant.core.headers',
 	
 	'courant.core.nando.lifecycle',
+	'courant.core.nando.workflow',
 )
 
 # Added for Django Debug Toolbar

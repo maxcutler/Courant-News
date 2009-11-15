@@ -8,6 +8,7 @@ from courant.core.staff.models import Staffer, ContentByline
 from courant.core.discussions.models import CommentOptions, DefaultCommentOption
 from courant.core.utils.managers import SubclassManager
 from courant.core.gettag import gettag
+from courant.core.nando.workflow.models import WorkflowMixin
 
 import tagging
 from tagging.fields import TagField
@@ -44,7 +45,7 @@ class MediaFolder(models.Model):
     indented_name.short_description = 'Name'
 mptt.register(MediaFolder, order_insertion_by=['name'])
 
-class MediaItem(models.Model):
+class MediaItem(WorkflowMixin):
     """
     Abstract base class for all types of media content. Allows placement in
     library folder system, association with staffers, and other basic fields that
