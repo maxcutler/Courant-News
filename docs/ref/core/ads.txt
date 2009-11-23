@@ -6,7 +6,7 @@ Ads
 
 .. module:: courant.core.ads
     :synopsis: Support tools for integrating external ad serving platforms.
-    
+
 This document explains all functionality built in the Courant News platform
 to aid in integration with external ad serving platforms such as OpenX or Google
 Ad Manager.
@@ -19,7 +19,7 @@ Google Ad Manager
 
 .. module:: courant.core.ads.templatetags.gam
     :synopsis: Template tags for integration with Google Ad Manager.
-    
+
 Integration with `Google Ad Manager <http://www.google.com/admanager>`_
 consists of two template tags. The iFrame method of embedding is used.
 
@@ -46,12 +46,42 @@ Inserts an ad into the page based on the supplied ad slot name and display
 dimensions::
 
     {% gam_display_ad "ad_slot_name" width height %}
-    
+
 Renders using the ``ads/gam/display_ad.html`` template.
+
+OpenX
+------------------
+
+.. module:: courant.core.ads.templatetags.openx
+    :synopsis: Template tags for integration with OpenX.
+
+Integration with `OpenX <http://www.openx.org/>`_.
+The iFrame method of embedding is used by the default templates.
+
+``{% load openx %}`` should be placed at the top of any template that uses these
+template tags.
+
+.. templatetag: openx_display_ad
+
+openx_display_ad
+^^^^^^^^^^^^^^
+
+Inserts an ad into the page based on the supplied zone id and display
+dimensions::
+
+    {% openx_display_ad zone_id width height %}
+
+Renders using the ``ads/openx/display_ad.html`` template.
+
+Invocation code types
+^^^^^^^^^^^^^^
+
+The default template that ships with Courant News uses the iFrame type
+invocation code. Other invocation code types can be used by overriding the
+template.
 
 Future Services
 ===============
 
-In the future, there are plans to support `OpenX <http://www.openx.org>`_. If
-there are other services that you would like to see support, please file a
+If there are other services that you would like to see support, please file a
 ticket or post on the mailing list.

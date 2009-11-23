@@ -1,0 +1,7 @@
+{% if not debug and openx_url %}
+<iframe id='{{ rand1 }}' name='{{ rand1 }}' src='http://{{ openx_url }}afr.php?zoneid={{ zone }}&amp;cb={{ rand1 }}' framespacing='0' frameborder='no' scrolling='no' width='{{ width }}' height='{{ height }}'><a href='http://{{ openx_url }}ck.php?n={{ rand2 }}&amp;cb={{ rand1 }}' target='_blank'><img src='http://{{ openx_url }}avw.php?zoneid={{ zone }}&amp;cb={{ rand1 }}&amp;n={{ rand2 }}' border='0' alt='' /></a></iframe>
+{% else %}
+<div style="width: {{ width }}px; height: {{ height }}px; background-color: #999; color: #FFF; text-align: center; margin: auto;">
+    Zone {{ zone }} Ad ({{ width }} x {{ height }})
+</div>
+{% endif %}
