@@ -9,6 +9,10 @@ from the cache for MINT_DELAY additional seconds.
 import time
 
 from django.core.cache import cache
+from django.utils.encoding import force_unicode
+from django.contrib.contenttypes.models import ContentType
+
+from models import CachedObject
 
 # based on http://www.djangosnippets.org/snippets/793/
 # MINT_DELAY is an upper bound on how long any value should take to
@@ -37,3 +41,26 @@ def set(key, val, timeout=DEFAULT_TIMEOUT, refreshed=False):
     return cache.set(key, packed_val, real_timeout)
 
 delete = cache.delete
+
+# utility functions
+
+STALE_REFRESH = 1
+STALE_CREATED = 2
+
+def check_smart_cache(request, *args):
+    cache_key = u':'.join([force_unicode(arg) for arg in args])
+    cache_key_stale = cache_key + '.stale'
+    value = cache.get(cache_key)
+    stale = cache.get(cache_key_stale)
+    if stale is None:
+        cache.set(cache_key_stale, STALE_REFRESH, 30) # lock
+        value = None # force refresh
+    return (value, cache_key)
+
+def update_cache_dependency(request, obj, cache_key):
+    if obj:
+        co, created = CachedObject.objects.get_or_create(url=request.get_full_path(),
+                                                         content_type=ContentType.objects.get_for_model(obj),
+                                                         object_id=obj.pk,
+                                                         cache_key=cache_key)
+        co.save() # update modified timestamp

@@ -5,15 +5,13 @@ from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
 
 from courant.core.caching.models import CachedObject
+from courant.core.caching.cache import check_smart_cache, update_cache_dependency, STALE_CREATED
 
 register = Library()
 
 
 class SmartCacheNode(Node):
     # based on http://www.djangosnippets.org/snippets/614/
-
-    STALE_REFRESH = 1
-    STALE_CREATED = 2
 
     def __init__(self, nodelist, expire_time, fragment_name, vary_on, cache_obj=None):
         self.nodelist = nodelist
@@ -25,28 +23,18 @@ class SmartCacheNode(Node):
 
     def render(self, context):
         # Build a unicode key for this fragment and all vary-on's.
-        cache_key = u':'.join([self.fragment_name] + \
-            [force_unicode(resolve_variable(var, context)) for var in self.vary_on])
-        cache_key_stale = cache_key + '.stale'
-        value = cache.get(cache_key)
-        stale = cache.get(cache_key_stale)
-        if stale is None:
-            cache.set(cache_key_stale, self.STALE_REFRESH, 30) # lock
-            value = None # force refresh
+        args = [self.fragment_name] + \
+            [force_unicode(resolve_variable(var, context)) for var in self.vary_on]
+        value, cache_key = check_smart_cache(context['request'], *args)
         if value is None:
             context.push()
             context['cache_key'] = cache_key
             value = self.nodelist.render(context)
             context.pop()
             cache.set(cache_key, value, self.expire_time)
-            cache.set(cache_key_stale, self.STALE_CREATED, self.stale_time)
-            if self.cache_obj:
-                obj = resolve_variable(self.cache_obj, context)
-                co, created = CachedObject.objects.get_or_create(url=context['request'].get_full_path(),
-                                                                 content_type=ContentType.objects.get_for_model(obj),
-                                                                 object_id=obj.pk,
-                                                                 cache_key=cache_key)
-                co.save() # update modified timestamp
+            cache.set('%s.stale' % cache_key, STALE_CREATED, self.stale_time)
+            obj = resolve_variable(self.cache_obj, context) if self.cache_obj else None
+            update_cache_dependency(context['request'], obj, cache_key)
         return value
 
 
@@ -107,11 +95,7 @@ class CacheDependencyNode(Node):
         if 'cache_key' in context:
             for dep in self.deps:
                 obj = resolve_variable(dep, context)
-                co, created = CachedObject.objects.get_or_create(url=context['request'].get_full_path(),
-                                                                 content_type=ContentType.objects.get_for_model(obj),
-                                                                 object_id=obj.pk,
-                                                                 cache_key=context['cache_key'])
-                co.save() # update modified timestamp
+                update_cache_dependency(context['request'], obj, context['cache_key'])
         return ''
 
 def do_cache_dependency(parser, token):
