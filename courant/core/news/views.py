@@ -1,13 +1,12 @@
 from django.shortcuts import get_object_or_404
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.flatpages.views import flatpage
 from django.conf import settings
-
 from datetime import datetime
 
 from courant.core.utils import render
 from courant.core.news.models import *
-from courant.core.caching.models import CachedObject
 from courant.core.caching.cache import check_smart_cache, update_cache_dependency, STALE_CREATED
 
 from tagging.models import Tag
@@ -26,8 +25,8 @@ def article_detailed(request, section=None, slug=None, year=None, month=None, da
             kwargs['status__published'] = True
         article = Article.objects.get(**kwargs)
 
-        cache.set(cache_key, article, 3600)
-        cache.set('%s.stale' % cache_key, STALE_CREATED, 3630)
+        cache.set(cache_key, article)
+        cache.set('%s.stale' % cache_key, STALE_CREATED)
         update_cache_dependency(request, article, cache_key)
 
     return render(request, [template, 'articles/%s/%s' % (article.section.path, article.display_type.template_name), 'articles/%s' % article.display_type.template_name, 'articles/%s' % settings.DISPLAY_TYPE_TEMPLATE_FALLBACK], {'article': article})
@@ -39,8 +38,8 @@ def homepage(request):
         if not issue:
             issue = Issue.objects.filter(published=True).latest('published_at')
 
-            cache.set(cache_key, issue, 3600)
-            cache.set('%s.stale' % cache_key, STALE_CREATED, 3630)
+            cache.set(cache_key, issue)
+            cache.set('%s.stale' % cache_key, STALE_CREATED)
             update_cache_dependency(request, issue, cache_key)
 
         return render(request, ['homepage/%s' % issue.display_type.template_name, 'homepage/default'], {'issue': issue})
