@@ -97,3 +97,11 @@ MOBILE_DEBUG = False
 INSTALLED_APPS += (
     'apps.articles',
 )
+
+#Map API keys
+GOOGLE_MAPS_V2_API_KEY = None
+YAHOO_MAPS_API_KEY = None
+
+#Default Maps Provider and Type
+DEFAULT_MAP_PROVIDER = "microsoft"
+DEFAULT_MAP_TYPE = "road"

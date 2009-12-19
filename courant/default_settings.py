@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'courant.core.siteconfig',
     'courant.core.mailer',
 	'courant.core.headers',
+	'courant.core.maps',
 )
 
 # Added for Django Debug Toolbar

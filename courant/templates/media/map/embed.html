@@ -1,0 +1,36 @@
+{% if map %}
+
+{% set_default width "500px" %}
+{% set_default height "500px" %}
+{% set_default div "media_item_detailed_map" %}
+
+<div id="{{ div }}" style="position: relative; height:{{ height }}px; width:{{ width }}px;"> </div>
+
+{% render "media/map/provider/"+map.provider.template+".html" %}
+<script type="text/javascript" src="http://mapstraction.googlecode.com/svn/trunk/source/mxn.js?({{ map.provider.template }})"></script>
+<script type="text/javascript">
+
+    ( function()  {
+        var m = new mxn.Mapstraction('{{ div }}','{{ map.provider.template }}');
+        m.setMapType(mxn.Mapstraction.{{ map.map_type }});
+        
+        m.addControls({zoom:'large'});
+        
+        {% for location in map.locations.all %}
+            {% with location.get_coordinates as coords %}
+                {% if coords %}
+                    var point = new mxn.LatLonPoint({{ location.latitude }}, {{ location.longitude }});
+                    var marker = new mxn.Marker(point);
+                    
+                    m.addMarker(marker, false);
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+      
+        // put map on page
+        m.autoCenterAndZoom();
+    })();
+    
+</script> 
+
+{% endif %}

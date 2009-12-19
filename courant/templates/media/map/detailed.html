@@ -1,0 +1,8 @@
+{% extends "media/detailed.html" %}
+{% load thumbnail %}
+
+{% block render_media_item %}
+{% render "media/map/embed.html" map=media_item div="media_item_detailed_map" width="960" height="500" %}
+{% render "media/media_byline.html" media_item=media_item staffers=media_item.staffers.all %}
+<div class="caption">{{ media_item.caption|safe|linebreaks }}</div>
+{% endblock %}
