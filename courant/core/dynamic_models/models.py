@@ -4,6 +4,8 @@ from django.contrib.contenttypes import generic
 
 from south.db import db
 
+from courant.core.caching import cache
+
 import copy
 
 class DynamicType(models.Model):
@@ -175,7 +177,11 @@ class DynamicModelBase(models.Model):
         # if one dynamic field is accessed, it is likely that another dynamic
         # field will be accessed in the lifetime of the model instance.
         if 'dynamic_type' not in name and self.dynamic_type and not name.startswith('_'):
-            dfields = DynamicTypeField.objects.filter(dynamic_type=self.dynamic_type)
+            dfields = cache.get('dfields_%d' % self.dynamic_type_id)
+            if not dfields:
+                dfields = DynamicTypeField.objects.filter(dynamic_type=self.dynamic_type)
+                cache.set('dfields_%d' % self.dynamic_type_id, dfields)
+
             if name in [field.name for field in dfields]:
 
                 # if this is the first time an Attribute has been created,
@@ -183,8 +189,12 @@ class DynamicModelBase(models.Model):
                 if name not in Attribute._meta.get_all_field_names():
                     Attribute()
 
-                attrs = Attribute.objects.get(content_type=ContentType.objects.get_for_model(self),
-                                              object_id=self.pk)
+                attrs = cache.get('attribute_%d_%d' % (ContentType.objects.get_for_model(self).pk, self.pk))
+                if not attrs:
+                    attrs = Attribute.objects.get(content_type=ContentType.objects.get_for_model(self),
+                                                  object_id=self.pk)
+                    cache.set('attribute_%d_%d' % (ContentType.objects.get_for_model(self).pk, self.pk), attrs)
+
                 for field in dfields:
                     setattr(self, field.name, getattr(attrs, field.column))
 
