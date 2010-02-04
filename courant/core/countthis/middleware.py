@@ -47,5 +47,5 @@ class CountThisMiddleware(object):
 
         return """
         <script type="text/javascript" src="%(string)s"></script>
-        <noscript><img width="0" height="0" src="%(string)s" />
+        <noscript><img width="0" height="0" src="%(string)s" /></noscript>
         """ % {'string': '/updatecount/' + string + '/?time=' + str(time())}
