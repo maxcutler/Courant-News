@@ -20,11 +20,10 @@ class MediaAdmin(admin.ModelAdmin):
     list_per_page = 10
     search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['folder']
-    
+
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("Tags", {
             'fields': ('tags',)
@@ -44,7 +43,7 @@ class PhotoAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("Image", {
             'fields': ('image',) 
@@ -63,7 +62,7 @@ class VideoAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("Details", {
             'fields': ('url','image') 
@@ -82,7 +81,7 @@ class AudioAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("Details", {
             'fields': ('file',) 
@@ -115,7 +114,7 @@ class FileAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("File", {
             'fields': ('file','image','width','height') 
@@ -134,7 +133,7 @@ class HTMLMediaSnippetAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
         ("Basics", {
-            'fields': ('name','caption', 'folder', 'published_at')
+            'fields': ('name','caption', 'published_at')
         }),
         ("Snippet", {
             'fields': ('snippet', 'image',)

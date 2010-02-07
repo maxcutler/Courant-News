@@ -63,7 +63,7 @@ class MediaItem(models.Model):
                             help_text="Short description to be used as a \
                                       headline or link text.")
     caption = models.TextField()
-    folder = models.ForeignKey(MediaFolder)
+    folder = models.ForeignKey(MediaFolder, null=True, blank=True)
     content_type = models.ForeignKey(ContentType,
                                      limit_choices_to={'app_label': 'media'},
                                      editable=False, null=True)
