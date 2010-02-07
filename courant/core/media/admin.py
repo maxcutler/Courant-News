@@ -129,3 +129,22 @@ class FileAdmin(MediaAdmin):
         }),
     )
 admin.site.register(File, FileAdmin)
+
+class HTMLMediaSnippetAdmin(MediaAdmin):
+    list_filter = ['created_at']
+    fieldsets = (
+        ("Basics", {
+            'fields': ('name','caption', 'folder', 'published_at')
+        }),
+        ("Snippet", {
+            'fields': ('snippet', 'image',)
+        }),
+        ("Tags", {
+            'fields': ('tags',)
+        }),
+        ("Advanced", {
+            'fields': ('slug','comment_options', 'staffers_override', 'status_line_override'),
+            'classes': ('collapse',)
+        }),
+    )
+admin.site.register(HTMLMediaSnippet, HTMLMediaSnippetAdmin)

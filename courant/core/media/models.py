@@ -300,3 +300,22 @@ class File(MediaItem):
         basename, extension = os.path.splitext(self.file.name)
         return extension[1:]
 gettag.register(File)
+
+class HTMLMediaSnippet(MediaItem):
+    """
+    Media item consisting of a snippet of HTML code. Useful for embedding interactive objects from 3rd-party services.
+    """
+    snippet = models.TextField()
+    image = models.ImageField(_('image'), upload_to=get_storage_path, help_text="Image to be used as a thumbnail.")
+
+    objects = SubclassManager()
+
+    class Meta:
+        ordering = ["-created_at"]
+        get_latest_by = "-created_at"
+
+    def __unicode__(self):
+        return u"HTML Snippet: %s" % self.name
+
+    def thumbnail(self):
+        return self.image

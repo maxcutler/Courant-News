@@ -19,7 +19,7 @@ def media_detailed(request, slug=None, year=None, month=None, day=None, template
     media_item = MediaItem.objects.get(**kwargs).as_leaf_class()
     return render(request,
                   [template,
-                   'media/%s/detailed' % media_item.content_type.name.lower(),
+                   'media/%s/detailed' % media_item.content_type.name.lower().replace(' ', '_'),
                    'media/detailed'],
                   {'media_item':media_item})
     
