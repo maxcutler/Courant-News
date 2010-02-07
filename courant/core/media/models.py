@@ -3,6 +3,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.cache import cache
+from django.template.defaultfilters import slugify
+from django.core.files.base import ContentFile
 
 from courant.core.staff.models import Staffer, ContentByline
 from courant.core.discussions.models import CommentOptions, DefaultCommentOption
@@ -14,7 +16,7 @@ from tagging.fields import TagField
 
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
-from courant.core.media.utils import get_file_path, get_storage_path, get_image_path
+from courant.core.media.utils import get_file_path, get_storage_path, get_image_path, get_temp_file_path
 
 from sorl.thumbnail.main import DjangoThumbnail
 from sorl.thumbnail.base import ThumbnailException
@@ -23,6 +25,16 @@ import mptt
 from datetime import datetime
 import urllib
 import os
+import zipfile
+
+try:
+    import Image
+except ImportError:
+    try:
+        from PIL import Image
+    except ImportError:
+        raise ImportError('Courant was unable to import the Python Imaging Library. Please confirm it`s installed and available on your current Python path.')
+
 
 class MediaFolder(models.Model):
     """
@@ -31,7 +43,7 @@ class MediaFolder(models.Model):
     """
     name = models.CharField(max_length=255)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
-    
+
     def __unicode__(self):
         return "%s/%s" % ('/'.join(self.get_ancestors().values_list('name', flat=True)), self.name)
 
@@ -67,7 +79,7 @@ class MediaItem(models.Model):
     content_type = models.ForeignKey(ContentType,
                                      limit_choices_to={'app_label': 'media'},
                                      editable=False, null=True)
-    
+
     staffers = models.ManyToManyField(Staffer, through='MediaByline', related_name='media')
     staffers_override = models.CharField(max_length=255, blank=True,
                                          help_text="Override normal staffer \
@@ -77,15 +89,15 @@ class MediaItem(models.Model):
                                             help_text="Override normal staffer \
                                                       associations, esp. for one-off \
                                                       contributors.")
-    
+
     slug = models.SlugField()
-    
+
     created_at = CreationDateTimeField()
     modified_at = ModificationDateTimeField()
     published_at = models.DateTimeField()
-    
+
     tags = TagField()
-    
+
     def default_comment_option():
         try:
             defaults = cache.get('default_mediaitem_comment_options')
@@ -97,21 +109,21 @@ class MediaItem(models.Model):
             return None
 
     comment_options = models.ForeignKey(CommentOptions, null=True, default=default_comment_option)
-    
+
     objects = SubclassManager()
-    
+
     class Meta:
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-    
+
     def __unicode__(self):
         return "Media: %s" % self.name
-    
+
     def save(self, *args, **kwargs):
         if(not self.content_type):
             self.content_type = ContentType.objects.get_for_model(self.__class__)
         self.save_base(*args, **kwargs)
-        
+
     @models.permalink
     def get_absolute_url(self):
         return('media_detailed', (), {
@@ -130,7 +142,7 @@ class MediaItem(models.Model):
         if (model == MediaItem):
             return self
         return model.objects.get(id=self.id)
-        
+
     def admin_thumbnail(self):
         """
         Returns an image for display in admin listings.
@@ -152,7 +164,7 @@ class MediaByline(ContentByline):
     order to display this staffer among all staffers associated with the item.
     """
     media_item = models.ForeignKey(MediaItem)
-    
+
 class ContentMedia(models.Model):
     """
     Abstract base class for associating media with a content object, including
@@ -160,26 +172,26 @@ class ContentMedia(models.Model):
     """
     media_item = models.ForeignKey(MediaItem)
     order = models.PositiveSmallIntegerField()
-    
+
     class Meta:
         abstract = True
         ordering = ['order']
-    
+
 class Photo(MediaItem):
     """
     Media item representing a photo or other image.
     """
     image = models.ImageField(_('image'), upload_to=get_storage_path)
-    
+
     objects = SubclassManager()
-    
+
     class Meta:
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-        
+
     def __unicode__(self):
         return u"Photo: %s" % self.name
-    
+
     def thumbnail(self):
         return self.image
 gettag.register(Photo)
@@ -194,16 +206,16 @@ class Video(MediaItem):
     url = models.URLField(help_text="Full URL of the video, in format:<br>http://www.youtube.com/v/id-here")
     image = models.ImageField("Thumbnail", upload_to=get_storage_path, blank=True,
                               help_text="Leave blank to automatically fetch from external service.")
-    
+
     objects = SubclassManager()
-    
+
     class Meta:
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-        
+
     def __unicode__(self):
         return u"Video: %s" % self.name
-    
+
     def save(self, **kwargs):
         if not self.image:
             youtube_id = self.url.split('/')[-1]
@@ -217,7 +229,7 @@ class Video(MediaItem):
                 file = urllib.urlretrieve("http://img.youtube.com/vi/%s/0.jpg" % youtube_id,sys_path)
             self.image = filename
         super(Video, self).save(**kwargs)
-        
+
     def thumbnail(self):
         return self.image
 gettag.register(Video)
@@ -227,15 +239,15 @@ class Audio(MediaItem):
     Media item representing an audio file.
     """
     file = models.FileField(upload_to=get_file_path)
-    
+
     class Meta:
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-        
+
     def __unicode__(self):
         return u"Audio: %s" % self.name
 gettag.register(Audio)
-  
+
 class Gallery(MediaItem):
     """
     Media item representing a collection of other media items. Typically to be
@@ -243,36 +255,120 @@ class Gallery(MediaItem):
     """
     media = models.ManyToManyField(MediaItem, through='GalleryMedia',
                                    related_name='galleries', symmetrical=False)
-    
+
     objects = SubclassManager()
-    
+
     def __init__(self, *args, **kwargs):
         super(Gallery, self).__init__(*args, **kwargs)
-        
+
         # fetch the first item in the gallery to be used for thumbnail purposes
         try:
             setattr(self, 'image', self.gallery_media.order_by('order')[0].media_item.as_leaf_class().image)
         except:
             pass
-    
+
     class Meta:
         verbose_name_plural = 'galleries'
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-        
+
     def __unicode__(self):
         return u"Gallery: %s" % self.name
-    
+
     def thumbnail(self):
         return self.image
-gettag.register(Gallery)    
+gettag.register(Gallery)
 
 class GalleryMedia(ContentMedia):
     """
     Associates media items to galleries in a specified order.
     """
     gallery = models.ForeignKey(Gallery, related_name='gallery_media')
-    
+
+"""
+GalleryUpload model originally based on model from django-photologue (r405, February 6, 2010).
+django-photologue is Copyright (c) 2007-2008, Justin C. Driscoll. All rights reserved.
+"""
+class GalleryUpload(models.Model):
+    zip_file = models.FileField(_('images file (.zip)'), upload_to=get_temp_file_path,
+                                help_text=_('Select a .zip file of images to upload into a new Gallery.'))
+    gallery = models.ForeignKey(Gallery, null=True, blank=True, help_text=_('Select a gallery to add these images to. leave this empty to create a new gallery from the supplied title.'))
+    name = models.CharField(max_length=255, help_text=_('All photos in the gallery will be given a name made up of the gallery name + a sequential number.'))
+    caption = models.TextField(help_text=_('Caption will be added to all photos.'))
+    caption_photos = models.BooleanField(default=True, help_text=_('Gallery caption will also be applied to each photo.'))
+    staffer = models.ForeignKey(Staffer)
+    published_at = models.DateTimeField()
+
+    class Meta:
+        verbose_name = _('gallery upload')
+        verbose_name_plural = _('gallery uploads')
+
+    def save(self, *args, **kwargs):
+        super(GalleryUpload, self).save(*args, **kwargs)
+        gallery = self.process_zipfile()
+        super(GalleryUpload, self).delete()
+        return gallery
+
+    def process_zipfile(self):
+        if os.path.isfile(self.zip_file.path):
+            # TODO: implement try-except here
+            zip = zipfile.ZipFile(self.zip_file.path)
+            bad_file = zip.testzip()
+            if bad_file:
+                raise Exception('"%s" in the .zip archive is corrupt.' % bad_file)
+            count = 1
+            if self.gallery:
+                gallery = self.gallery
+            else:
+                gallery = Gallery.objects.create(name=self.name,
+                                                 slug=slugify(self.name),
+                                                 caption=self.caption,
+                                                 published_at=self.published_at)
+
+                MediaByline(media_item=gallery, staffer=self.staffer, order=1).save()
+
+            from cStringIO import StringIO
+            for filename in sorted(zip.namelist()):
+                if filename.startswith('__'): # do not process meta files
+                    continue
+                data = zip.read(filename)
+                if len(data):
+                    try:
+                        # the following is taken from django.newforms.fields.ImageField:
+                        #  load() is the only method that can spot a truncated JPEG,
+                        #  but it cannot be called sanely after verify()
+                        trial_image = Image.open(StringIO(data))
+                        trial_image.load()
+                        # verify() is the only method that can spot a corrupt PNG,
+                        #  but it must be called immediately after the constructor
+                        trial_image = Image.open(StringIO(data))
+                        trial_image.verify()
+                    except Exception, e:
+                        # if a "bad" file is found we just skip it.
+                        assert False, ('Bad file in zip upload', e)
+                        continue
+                    while 1:
+                        name = ' '.join([self.name, str(count)])
+                        slug = slugify(name)
+                        try:
+                            p = Photo.objects.get(slug=slug)
+                        except Photo.DoesNotExist:
+                            photo = Photo(name=name,
+                                          slug=slug,
+                                          published_at=self.published_at)
+                            photo.caption = self.caption if self.caption_photos else ''
+                            photo.image.save(filename, ContentFile(data))
+                            photo.save()
+
+                            MediaByline(media_item=photo, staffer=self.staffer, order=1).save()
+
+                            GalleryMedia(gallery=gallery, media_item=photo, order=count).save()
+                            count = count + 1
+                            break
+                        count = count + 1
+            zip.close()
+            return gallery
+
 class File(MediaItem):
     """
     Media item representing a file.
@@ -280,19 +376,19 @@ class File(MediaItem):
     file = models.FileField(_('file'), upload_to=get_file_path)
     image = models.ImageField("Thumbnail", upload_to=get_storage_path, blank=True,
                               help_text="Leave blank to generate automatically.")
-    
+
     width = models.PositiveIntegerField(blank=True, null=True, help_text="Only required for certain file types (e.g., SWF)")
     height = models.PositiveIntegerField(blank=True, null=True, help_text="Only required for certain file types (e.g., SWF)")
-    
+
     objects = SubclassManager()
-    
+
     class Meta:
         ordering = ["-created_at"]
         get_latest_by = "-created_at"
-        
+
     def thumbnail(self):
         return self.image if self.image else self.file
-    
+
     def extension(self):
         """
         Returns file extension without leading dot (e.g., 'pdf', 'swf')

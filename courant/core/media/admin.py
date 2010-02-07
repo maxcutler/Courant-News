@@ -33,7 +33,7 @@ class MediaAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     inlines = [
         MediaBylineInline,
     ]
@@ -46,7 +46,7 @@ class PhotoAdmin(MediaAdmin):
             'fields': ('name','caption', 'published_at')
         }),
         ("Image", {
-            'fields': ('image',) 
+            'fields': ('image',)
         }),
         ("Tags", {
             'fields': ('tags',)
@@ -65,7 +65,7 @@ class VideoAdmin(MediaAdmin):
             'fields': ('name','caption', 'published_at')
         }),
         ("Details", {
-            'fields': ('url','image') 
+            'fields': ('url','image')
         }),
         ("Tags", {
             'fields': ('tags',)
@@ -84,7 +84,7 @@ class AudioAdmin(MediaAdmin):
             'fields': ('name','caption', 'published_at')
         }),
         ("Details", {
-            'fields': ('file',) 
+            'fields': ('file',)
         }),
         ("Tags", {
             'fields': ('tags',)
@@ -101,7 +101,7 @@ class GalleryMediaInline(admin.TabularInline):
     fields = ('media_item','order')
     raw_id_fields = ('media_item',)
     fk_name = 'gallery'
-    
+
 class GalleryAdmin(MediaAdmin):
     list_filter = ['created_at']
     inlines = [
@@ -110,6 +110,13 @@ class GalleryAdmin(MediaAdmin):
     ]
 admin.site.register(Gallery, GalleryAdmin)
 
+class GalleryUploadAdmin(admin.ModelAdmin):
+    raw_id_fields = ('staffer',)
+    def has_change_permission(self, request, obj=None):
+        return False # To remove the 'Save and continue editing' button
+admin.site.register(GalleryUpload, GalleryUploadAdmin)
+
+
 class FileAdmin(MediaAdmin):
     list_filter = ['created_at']
     fieldsets = (
@@ -117,7 +124,7 @@ class FileAdmin(MediaAdmin):
             'fields': ('name','caption', 'published_at')
         }),
         ("File", {
-            'fields': ('file','image','width','height') 
+            'fields': ('file','image','width','height')
         }),
         ("Tags", {
             'fields': ('tags',)
